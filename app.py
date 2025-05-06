@@ -1,11 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, session
 import json
 from werkzeug.security import check_password_hash, generate_password_hash
-from flask_bootstrap import Bootstrap
+from flask_bootstrap import Bootstrap5
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
-bootstrap = Bootstrap(app)
+bootstrap = Bootstrap5(app)
 
 # Routes
 @app.route('/', methods=['GET', 'POST'])
