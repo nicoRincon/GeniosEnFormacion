@@ -9,4 +9,3 @@ python-dotenv
 Flask-Migrate
 flask-sqlalchemy
 openpyxl
-bootstrap-flask

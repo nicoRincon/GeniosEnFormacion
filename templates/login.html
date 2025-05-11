@@ -1,44 +1,143 @@
-{% extends 'base.html' %}
+{% extends "templates/base.html" %}
+
+{% block title %}Iniciar sesión{% endblock %}
+
+{% block add_head %}
+<script src="{{url_for('static', filename = 'js/login.js')}}"></script>
+{% endblock %}
+
+{% block header %}
+    <ul class="nav nav-pills nav-justified mb-3" id="ex1">
+        <li class="nav-item">
+            <a class="nav-link active" id="tab-login" href="#pills-login" aria-controls="pills-login"
+                onclick="changeLoginPages('login')">Login</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="tab-register" href="#pills-register" aria-controls="pills-register"
+                onclick="changeLoginPages('register')">Registro</a>
+        </li>
+    </ul>
+
+    {% if error %}
+        <script>
+            Swal.fire({
+                title: '¡Error!',
+                text: '{{ error }}',
+                icon: 'error',
+                confirmButtonText: 'Ok'
+            });
+        </script>
+    {% endif %}
+{% endblock %}
 
 {% block content %}
-    <div class="flex items-center justify-center h-screen bg-gray-900">
-        <div class="bg-white shadow-lg p-8 rounded-md max-w-md w-full">
-            <h2 class="text-3xl font-semibold mb-6 text-gray-800">Login</h2>
-            {% if error %}
-                <div class="bg-red-500 text-white p-3 mb-4 rounded-md">
-                    <p><i class="fas fa-exclamation-triangle"></i> {{ error }}</p>
+    <div class="tab-content">
+        <div class="tab-pane fade show active" id="pills-login" role="tabpanel" aria-labelledby="tab-login">
+            <form action="/" method="post">
+                <div class="container-fluid h-100">
+                    <div class="row d-flex justify-content-center align-items-center h-100">
+                        <div class="col-md-9 col-lg-6 col-xl-5">
+                            <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/draw2.webp"
+                                class="img-fluid" alt="Sample">
+                        </div>
+                        <div class="col-md-8 col-lg-6 col-xl-4 offset-xl-1">
+                            <div data-mdb-input-init class="form-outline mb-4">
+                                <input type="text" id="username" class="form-control form-control-lg"
+                                    placeholder="Ingresa un usuario valido" name="username"/>
+                                <label class="form-label" for="username">Usuario o correo</label>
+                            </div>
+
+                            <div data-mdb-input-init class="form-outline mb-3">
+                                <input type="password" id="password" class="form-control form-control-lg"
+                                    placeholder="Ingresa tu contraseña"
+                                    name="password"/>
+                                <label class="form-label" for="password">Contraseña</label>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center">
+                                <a href="#!" class="text-body">¿Olvidaste tu contraseña?</a>
+                            </div>
+
+                            <div class="text-center mt-4 pt-2">
+                                <button type="submit" data-mdb-button-init data-mdb-ripple-init
+                                    class="btn btn-primary btn-lg"
+                                    style="padding-left: 2.5rem; padding-right: 2.5rem;"
+                                >
+                                    Ingresar
+                                </button>
+                                <p class="small fw-bold mt-2 pt-1 mb-0">
+                                    ¿No tienes cuenta?
+                                    <a href="#pills-register" onclick="changeLoginPages('register')" class="link-danger">
+                                        Registrate
+                                    </a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-            {% endif %}
-            <form action="/" method="post" class="space-y-4">
-                <div class="relative">
-                    <label for="username" class="block text-sm font-medium text-gray-500">Username</label>
-                    <input type="text" id="username" name="username" class="form-input block w-full px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 text-gray-700">
-                    <i class="fas fa-user absolute top-3 right-4 text-gray-500"></i>
-                </div>
-                <div class="relative">
-                    <label for="password" class="block text-sm font-medium text-gray-500">Password</label>
-                    <input type="password" id="password" name="password" class="form-input block w-full px-3 py-2 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm border-gray-300 text-gray-700">
-                    <i class="fas fa-lock absolute top-3 right-4 text-gray-500"></i>
-                    <i class="fas fa-eye absolute top-3 right-10 text-gray-500 cursor-pointer" onclick="togglePasswordVisibility('password', this)"></i>
-                </div>
-                <button type="submit" class="w-full bg-blue-500 text-white py-2 px-4 rounded-md transition duration-300 hover:bg-blue-600">Login</button>
             </form>
-            <p class="text-gray-600 mt-4">Don't have an account? <a href="{{ url_for('signup') }}" class="text-blue-500 hover:underline">Sign Up</a></p>
+        </div>
+        <div class="tab-pane fade" id="pills-register" role="tabpanel" aria-labelledby="tab-register">
+            <form action="{{ url_for('register') }}" method="POST">
+                <div data-mdb-input-init class="form-outline mb-4">
+                    <label class="form-label" for="name_register">Nombre</label>
+                    <input type="text" id="name_register" class="form-control"
+                        name="name_register" placeholder="Ingrese el nombre"
+                        minlength="3" required
+                    />
+                </div>
+
+                <div data-mdb-input-init class="form-outline mb-4">
+                    <label class="form-label" for="lastname_register">Apellido</label>
+                    <input type="text" id="lastname_register" name="lastname_register" class="form-control"
+                        placeholder="Ingrese el apellido"
+                        minlength="3" required
+                    />
+                </div>
+
+                <div data-mdb-input-init class="form-outline mb-4">
+                    <label class="form-label" for="username_register">Usuario</label>
+                    <input type="text" id="username_register"
+                        class="form-control" name="username_register"
+                        placeholder="Ingrese el nombre de usuario"
+                        minlength="3" required
+                    />
+                </div>
+
+                <div data-mdb-input-init class="form-outline mb-4">
+                    <label class="form-label" for="email_register">Correo</label>
+                    <input type="email" id="email_register" name="email_register" class="form-control"
+                        placeholder="example@example.co"
+                        pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
+                        title="Ingrese un correo valido"
+                        required
+                    />
+                </div>
+
+                <div data-mdb-input-init class="form-outline mb-4">
+                    <label class="form-label" for="password_register">Contraseña</label>
+                    <input type="password" id="password_register" name="password_register" class="form-control"
+                        placeholder="Ingrese una contraseña"
+                        minlength="8" required
+                        pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                        title="La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número"
+                    />
+                </div>
+
+                <div data-mdb-input-init class="form-outline mb-4">
+                    <label class="form-label" for="confirm_password_register">Confirmar contraseña</label>
+                    <input type="password" id="confirm_password_register" name="confirm_password_register"
+                        class="form-control" placeholder="Ingrese de nuevo la contraseña"
+                        minlength="8" required
+                        pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+                        title="La contraseña debe tener al menos 8 caracteres, una mayúscula, una minúscula y un número"
+                    />
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-block mb-3" id="register_btn">
+                    Registrarse
+                </button>
+            </form>
         </div>
     </div>
-    <script>
-        function togglePasswordVisibility(fieldId, eyeIcon) {
-            const field = document.getElementById(fieldId);
-            if (field && eyeIcon) {
-                const fieldType = field.getAttribute('type');
-                if (fieldType === 'password') {
-                    field.setAttribute('type', 'text');
-                    eyeIcon.classList.add('fa-eye-slash');
-                } else {
-                    field.setAttribute('type', 'password');
-                    eyeIcon.classList.remove('fa-eye-slash');
-                }
-            }
-        }
-    </script>
 {% endblock %}
