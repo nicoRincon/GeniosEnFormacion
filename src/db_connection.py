@@ -8,10 +8,6 @@ from flask_sqlalchemy import SQLAlchemy
 
 mySql = MySQL()
 app = Flask('app')
-db = SQLAlchemy()
-
-def init_db(app):
-    db.init_app(app)
 
 load_dotenv()
 app.config["MYSQL_USER"] = os.getenv("MYSQL_USER")
@@ -24,7 +20,7 @@ mySql.init_app(app)
 
 app.config["SQLALCHEMY_DATABASE_URI"] = f"mysql://{os.getenv('MYSQL_USER')}:{os.getenv('MYSQL_PASSWORD')}@{os.getenv('MYSQL_HOST')}/{os.getenv('MYSQL_DB')}"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
-db_alchemy = SQLAlchemy(app)
-migrate = Migrate(app, db_alchemy)
+db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 
-__all__ = ["app", "mySql", "db_alchemy"]
+__all__ = ["app", "mySql", "db"]

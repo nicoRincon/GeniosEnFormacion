@@ -1,9 +1,6 @@
-from flask import Flask, redirect, render_template, url_for, request, session
+from flask import redirect, render_template, url_for, request, session
 from src.login.login import User
-from flask import Flask
-from flask_sqlalchemy import SQLAlchemy
 from src.db_connection import app
-from flask_migrate import Migrate
 
 
 @app.route("/dashboard", methods=["POST", "GET"])
@@ -34,10 +31,13 @@ def register():
     error = None
     if request.method == 'POST':
         username = request.form['username_register']
+        name = request.form['name_register']
+        last_name = request.form['lastname_register']
+        email = request.form['email_register']
         password = request.form['password_register']
         confirm_password = request.form['confirm_password_register']
         try:
-            User(username, password, confirm_password).register()
+            User( username, password, confirm_password, name, last_name).register()
             return redirect(url_for('login'))
         except ValueError as e:
             error = str(e.__str__())

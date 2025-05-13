@@ -1,15 +1,17 @@
 from werkzeug.security import check_password_hash, generate_password_hash
 import json
 from flask import session
-from flask import Flask
-from flask_migrate import Migrate
-from src.db_connection import db, init_db
+from src.db_connection import db
+from database.Usuarios.Usuario import Usuario
 
 class User:
     user_json_file = 'users.json'
 
-    def __init__(self, username: str, password: str, confirm_password: str = ''):
+    def __init__(self, username: str, password: str, confirm_password: str = '', name: str = '', last_name: str = ''):
         self.username = username
+        self.name = name
+        self.last_name = last_name
+
         self.password = password
         self.confirm_password = confirm_password
 
@@ -34,7 +36,15 @@ class User:
         if self.password == self.confirm_password:
             hashed_password = generate_password_hash(self.password)
 
-            users = {}
+            user = Usuario()
+            user.nombre = self.name
+            user.apellido = self.last_name
+            user.nombre_usuario = self.username
+            user.correo = self.username
+            user.clave = hashed_password
+            user.id_rol = '1'
+            db.session.add(user)
+            db.session.commit()
 
             with open('users.json', 'r') as file:
                 users = json.load(file)
