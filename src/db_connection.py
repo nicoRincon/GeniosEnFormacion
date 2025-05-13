@@ -8,6 +8,10 @@ from flask_sqlalchemy import SQLAlchemy
 
 mySql = MySQL()
 app = Flask('app')
+db = SQLAlchemy()
+
+def init_db(app):
+    db.init_app(app)
 
 load_dotenv()
 app.config["MYSQL_USER"] = os.getenv("MYSQL_USER")

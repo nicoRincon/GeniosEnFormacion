@@ -1,8 +1,10 @@
 from flask import Flask, redirect, render_template, url_for, request, session
 from src.login.login import User
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from src.db_connection import app
+from flask_migrate import Migrate
 
-app = Flask(__name__)
-app.secret_key = 'your_secret_key'
 
 @app.route("/dashboard", methods=["POST", "GET"])
 def dashboard():
