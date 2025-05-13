@@ -1,0 +1,14 @@
+from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime, timezone
+
+db = SQLAlchemy()
+
+class Contenido(db.Model):
+    __tablename__ = 'contenido'
+    id = db.Column(db.Integer, primary_key=True)
+    id_tema = db.Column(db.Integer, db.ForeignKey('temas.id'), nullable=False)
+    titulo = db.Column(db.String(100), nullable=False)
+    contenido = db.Column(db.Text, nullable=False)
+    nivel_grado = db.Column(db.Numeric)
+    fecha_creacion = db.Column(db.DateTime, default=datetime.now(timezone.utc))
+    fecha_actualizacion = db.Column(db.DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
