@@ -1,6 +1,9 @@
 from werkzeug.security import check_password_hash, generate_password_hash
 import json
 from flask import session
+from flask import Flask
+from flask_migrate import Migrate
+from src.db_connection import db, init_db
 
 class User:
     user_json_file = 'users.json'
