@@ -5,7 +5,7 @@ db = SQLAlchemy()
 
 class Contenido(db.Model):
     __tablename__ = 'contenido'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     id_tema = db.Column(db.Integer, db.ForeignKey('temas.id'), nullable=False)
     titulo = db.Column(db.String(100), nullable=False)
     contenido = db.Column(db.Text, nullable=False)

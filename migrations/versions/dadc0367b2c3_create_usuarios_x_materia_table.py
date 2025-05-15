@@ -19,7 +19,7 @@ depends_on = None
 
 def upgrade():
     op.create_table('usuarios_x_materia',
-        sa.Column('id', sa.Integer(), primary_key=True),
+        sa.Column('id', sa.Integer(), primary_key=True, autoincrement=True),
         sa.Column('id_usuario', sa.Integer(), sa.ForeignKey('usuarios.id'), nullable=False),
         sa.Column('id_materia', sa.Integer(), sa.ForeignKey('materias.id'), nullable=False),
         sa.Column('fecha_creacion', sa.DateTime(), default=datetime.utcnow),
@@ -27,4 +27,4 @@ def upgrade():
     )
 
 def downgrade():
-    pass
+    op.drop_table('usuarios_x_materia')

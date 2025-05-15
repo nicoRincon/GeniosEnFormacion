@@ -19,7 +19,7 @@ logger = logging.getLogger('alembic.env')
 
 # Importa tus modelos aquí para que Alembic pueda detectarlos
 from src import db_connection  # Ajusta esta ruta según tu estructura real
-target_metadata = db_connection.db_alchemy.metadata
+target_metadata = db_connection.db.metadata
 
 def get_engine():
     try:

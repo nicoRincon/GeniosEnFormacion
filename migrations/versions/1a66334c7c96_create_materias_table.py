@@ -18,7 +18,7 @@ depends_on = None
 
 def upgrade():
     op.create_table('materias',
-        sa.Column('id', sa.Integer, primary_key=True),
+        sa.Column('id', sa.Integer, primary_key=True, autoincrement=True),
         sa.Column('nombre', sa.String(length=50), nullable=False),
         sa.Column('descripcion', sa.String(length=255)),
         sa.Column('fecha_creacion', sa.DateTime(), nullable=True),

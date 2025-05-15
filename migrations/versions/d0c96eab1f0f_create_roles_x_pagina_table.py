@@ -18,7 +18,7 @@ depends_on = None
 
 def upgrade():
     op.create_table('roles_x_pagina',
-        sa.Column('id_rol', sa.String(20), sa.ForeignKey('roles.id'), primary_key=True),
+        sa.Column('id_rol', sa.Integer(), sa.ForeignKey('roles.id'), primary_key=True),
         sa.Column('id_pagina', sa.Integer(), sa.ForeignKey('paginas.id'), primary_key=True)
     )
 

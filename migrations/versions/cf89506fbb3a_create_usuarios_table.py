@@ -19,8 +19,8 @@ depends_on = None
 
 def upgrade():
     op.create_table('usuarios',
-        sa.Column('id', sa.Integer(), primary_key=True),
-        sa.Column('id_rol', sa.String(20), sa.ForeignKey('roles.id'), nullable=False),
+        sa.Column('id', sa.Integer(), primary_key=True, autoincrement=True),
+        sa.Column('id_rol', sa.Integer(), sa.ForeignKey('roles.id'), nullable=False),
         sa.Column('nombre', sa.String(50), nullable=False),
         sa.Column('apellido', sa.String(50), nullable=False),
         sa.Column('nombre_usuario', sa.String(100), unique=True, nullable=False),

@@ -18,7 +18,7 @@ depends_on = None
 
 def upgrade():
     op.create_table('tipo_actividad',
-        sa.Column('id', sa.Integer, primary_key=True),
+        sa.Column('id', sa.Integer, primary_key=True, autoincrement=True),
         sa.Column('tipo_actividad', sa.String(length=50), nullable=False),
         sa.Column('peso', sa.Numeric(), nullable=True)
     )

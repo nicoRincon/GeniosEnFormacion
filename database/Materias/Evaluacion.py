@@ -5,7 +5,7 @@ db = SQLAlchemy()
 
 class Evaluacion(db.Model):
     __tablename__ = 'evaluaciones'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     id_usuario = db.Column(db.Integer, db.ForeignKey('usuarios.id'), nullable=False)
     id_contenido = db.Column(db.Integer, db.ForeignKey('contenido.id'), nullable=False)
     titulo = db.Column(db.String(50), nullable=False)

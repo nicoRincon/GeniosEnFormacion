@@ -19,7 +19,7 @@ depends_on = None
 
 def upgrade():
     op.create_table('recursos',
-        sa.Column('id', sa.Integer(), primary_key=True),
+        sa.Column('id', sa.Integer(), primary_key=True, autoincrement=True),
         sa.Column('id_actividad', sa.Integer(), sa.ForeignKey('actividades.id'), nullable=False),
         sa.Column('titulo', sa.String(50), nullable=False),
         sa.Column('tipo', sa.String(10), nullable=False),

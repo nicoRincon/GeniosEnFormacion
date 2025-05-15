@@ -19,7 +19,7 @@ depends_on = None
 
 def upgrade():
     op.create_table('ejemplos',
-        sa.Column('id', sa.Integer(), primary_key=True),
+        sa.Column('id', sa.Integer(), primary_key=True, autoincrement=True),
         sa.Column('id_contenido', sa.Integer(), sa.ForeignKey('contenido.id'), nullable=False),
         sa.Column('ejemplos', sa.Text(), nullable=False),
         sa.Column('fecha_creacion', sa.DateTime(), default=datetime.utcnow),
