@@ -18,7 +18,7 @@ depends_on = None
 
 def upgrade():
     op.create_table('tipos_pagina',
-            sa.Column('id', sa.String(length=20), primary_key=True),
+            sa.Column('id', sa.Integer(), primary_key=True, autoincrement=True),
             sa.Column('nombre_tipo_pagina', sa.String(length=20), nullable=False)
     )          
 

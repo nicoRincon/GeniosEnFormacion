@@ -19,7 +19,7 @@ depends_on = None
 
 def upgrade():
     op.create_table('actividades',
-        sa.Column('id', sa.Integer(), primary_key=True),
+        sa.Column('id', sa.Integer(), primary_key=True, autoincrement=True),
         sa.Column('id_contenido', sa.Integer(), sa.ForeignKey('contenido.id'), nullable=False),
         sa.Column('id_tipo_actividad', sa.Integer(), sa.ForeignKey('tipo_actividad.id'), nullable=False),
         sa.Column('contenido', sa.Text(), nullable=False),
@@ -27,6 +27,5 @@ def upgrade():
         sa.Column('fecha_actualizacion', sa.DateTime(), default=datetime.utcnow, onupdate=datetime.utcnow)
     )
 
-
 def downgrade():
-    pass
+    op.drop_table('actividades')

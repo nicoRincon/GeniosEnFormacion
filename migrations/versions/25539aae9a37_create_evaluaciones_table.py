@@ -19,7 +19,7 @@ depends_on = None
 
 def upgrade():
     op.create_table('evaluaciones',
-        sa.Column('id', sa.Integer(), primary_key=True),
+        sa.Column('id', sa.Integer(), primary_key=True, autoincrement=True),
         sa.Column('id_usuario', sa.Integer(), sa.ForeignKey('usuarios.id'), nullable=False),
         sa.Column('id_contenido', sa.Integer(), sa.ForeignKey('contenido.id'), nullable=False),
         sa.Column('titulo', sa.String(50), nullable=False),

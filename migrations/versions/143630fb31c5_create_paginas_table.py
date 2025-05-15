@@ -19,8 +19,8 @@ depends_on = None
 
 def upgrade():
     op.create_table('paginas',
-        sa.Column('id', sa.Integer(), primary_key=True),
-        sa.Column('id_tipo_pagina', sa.String(20), sa.ForeignKey('tipos_pagina.id'), nullable=False),
+        sa.Column('id', sa.Integer(), primary_key=True, autoincrement=True),
+        sa.Column('id_tipo_pagina', sa.Integer(), sa.ForeignKey('tipos_pagina.id'), nullable=False),
         sa.Column('id_pagina_padre', sa.Integer(), sa.ForeignKey('paginas.id'), nullable=True),
         sa.Column('nombre_pagina', sa.String(80), nullable=False),
         sa.Column('descripcion', sa.String(80)),

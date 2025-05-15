@@ -5,7 +5,7 @@ db = SQLAlchemy()
 
 class Recurso(db.Model):
     __tablename__ = 'recursos'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     id_actividad = db.Column(db.Integer, db.ForeignKey('actividades.id'), nullable=False)
     titulo = db.Column(db.String(50), nullable=False)
     tipo = db.Column(db.String(10), nullable=False)
