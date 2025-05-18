@@ -48,3 +48,7 @@ def register():
 def logout():
     User(session['username'], '').logout()
     return redirect(url_for('login'))
+
+@app.route('/business_understanding')
+def business_understanding():
+    return render_template('project_explanation/business_understanding.html')

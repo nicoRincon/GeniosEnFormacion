@@ -15,6 +15,7 @@ app.config["MYSQL_PASSWORD"] = os.getenv("MYSQL_PASSWORD")
 app.config["MYSQL_HOST"] = os.getenv("MYSQL_HOST")
 app.config["MYSQL_DB"] = os.getenv("MYSQL_DB")
 app.config["MYSQL_CURSORCLASS"] = "DictCursor"
+app.secret_key = os.getenv("SESSION_SECRET_KEY")
 
 mySql.init_app(app)
 
