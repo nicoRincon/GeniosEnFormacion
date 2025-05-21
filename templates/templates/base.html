@@ -48,14 +48,28 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a class="dropdown-item" href="#">
-                                        Another action
+                                    <a class="dropdown-item" href="{{ url_for('data_engineering') }}">
+                                        Ingenieria de datos
                                     </a>
                                 </li>
+
                                 <li>
-                                    <hr class="dropdown-divider">
+                                    <a class="dropdown-item" href="{{ url_for('model_engineering') }}">
+                                        Ingenieria del modelo
+                                    </a>
                                 </li>
-                                <li><a class="dropdown-item" href="#">Something else here</a></li>
+
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('model_evaluation') }}">
+                                        Evaluacion del modelo
+                                    </a>
+                                </li>
+                                
+                                <li>
+                                    <a class="dropdown-item" href="{{ url_for('model_deployment') }}">
+                                        Despliegue del modelo
+                                    </a>
+                                </li>
                             </ul>
                         </li>
                         <li class="nav-item">
