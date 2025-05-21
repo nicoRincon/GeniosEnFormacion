@@ -3,6 +3,9 @@ from src.pages.pages_by_users_service import PagesByUsers
 from src.login.login import User
 from src.db_connection import app
 
+# noqa: F401  # Import needed for Flask route registration
+import src.users.roles_controller
+
 
 @app.route("/dashboard", methods=["POST", "GET"])
 def dashboard():
@@ -17,10 +20,10 @@ def dashboard():
         error = str(e.__str__())
         pages_by_users = []
 
+    session['pages_by_users'] = pages_by_users
+
     return render_template(
         'dashboard.html',
-        username=session['username'],
-        pages_by_users=pages_by_users,
         error=error
     )
 
@@ -73,3 +76,10 @@ def logout():
 @app.route('/business_understanding')
 def business_understanding():
     return render_template('project_explanation/business_understanding.html')
+
+@app.context_processor
+def inject_pages_by_users():
+    return {
+        "pages_by_users": session.get("pages_by_users", []),
+        "username": session.get("username", None),
+    }

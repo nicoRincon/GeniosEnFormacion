@@ -1,0 +1,22 @@
+{% extends "templates/modal.html" %}
+
+<!-- Modal create -->
+{% block modal_data %}
+    id="role-modal-create" aria-labelledby="roleModalCreateLabel"
+{% endblock %}
+
+{% block modal_title %}
+    Crear Rol
+{% endblock %}
+
+{% block form_action %}
+    action="{{ url_for('create_role') }}" method="post"
+{% endblock %}
+
+{% block modal_body %}
+    <div class="form-group">
+        <input type="hidden" name="_method" value="POST">
+        <label for="create-rol-name">Nombre del rol</label>
+        <input type="text" class="form-control" id="create-rol-name" name="create_rol_name" required>
+    </div>
+{% endblock %}

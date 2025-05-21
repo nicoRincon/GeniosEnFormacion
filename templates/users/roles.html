@@ -1,0 +1,53 @@
+{% extends "templates/base.html" %}
+{% include "users/roles_modal_create.html" %}
+{% include "users/roles_modal_update.html" %}
+
+{% block title %}Roles{% endblock %}
+
+{% block add_head %}
+    <script>
+        const BASE_EDIT_URL = "{{ url_for('role_by_id', role_id=0) }}";
+        const ERROR = "{{ error }}" == 'None' ? null : "{{ error }}";
+        const MESSAGE = "{{ message }}" == 'None' ? null : "{{ message }}";
+    </script>
+    <script src="{{ url_for('static', filename='js/roles.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Roles</h1>
+    <div class="d-flex justify-content-end">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#role-modal-create">
+            Crear nuevo rol
+        </button>
+    </div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for role in all_roles %}
+            <tr>
+                <td>{{ role.id }}</td>
+                <td>{{ role.nombre_rol }}</td>
+                <td class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#role-modal-update" data-id="{{ role.id }}">
+                        Editar
+                    </button>
+                    <form action="{{ url_for('role_by_id', role_id=role.id) }}" method="post"
+                        class="py-0 my-0 mx-2"
+                    >
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
