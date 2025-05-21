@@ -3,7 +3,6 @@ from src.pages.pages_by_users_service import PagesByUsers
 from src.login.login import User
 from src.db_connection import app
 
-# noqa: F401  # Import needed for Flask route registration
 import src.users.roles_controller
 
 
@@ -68,6 +67,7 @@ def register():
 
     return redirect(url_for('login', error=error, tab='register'))
 
+
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
     User(session['username'], '').logout()
@@ -76,6 +76,22 @@ def logout():
 @app.route('/business_understanding', methods=['GET'])
 def business_understanding():
     return render_template('project_explanation/business_understanding.html', username=session['username'])
+
+@app.route('/data_engineering', methods=['GET'])
+def data_engineering():
+    return render_template('project_explanation/data_engineering.html', username=session['username'])
+
+@app.route('/model_engineering', methods=['GET'])
+def model_engineering():
+    return render_template('project_explanation/model_engineering.html', username=session['username'])
+
+@app.route('/model_evaluation', methods=['GET'])
+def model_evaluation():
+    return render_template('project_explanation/model_evaluation.html', username=session['username'])
+
+@app.route('/model_deployment', methods=['GET'])
+def model_deployment():
+    return render_template('project_explanation/model_deployment.html', username=session['username'])
 
 
 @app.context_processor
