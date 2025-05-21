@@ -14,3 +14,4 @@ class Pagina(db.Model):
     fecha_actualizacion = db.Column(db.DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
 
     rol_paginas = db.relationship('RolPagina', back_populates='pagina')
+    subpaginas = db.relationship('Pagina', backref=db.backref('padre', remote_side=[id]))
