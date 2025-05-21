@@ -7,11 +7,19 @@ from database.Usuarios.Usuario import Usuario
 class User:
     user_json_file = 'users.json'
 
-    def __init__(self, username: str, password: str, confirm_password: str = '', name: str = '', last_name: str = ''):
+    def __init__(
+        self,
+        username: str,
+        password: str,
+        confirm_password: str = '',
+        name: str = '',
+        last_name: str = '',
+        email: str = ''
+    ):
         self.username = username
         self.name = name
         self.last_name = last_name
-
+        self.email = email
         self.password = password
         self.confirm_password = confirm_password
 
@@ -19,13 +27,23 @@ class User:
         return f"User({self.username}, {self.password})"
 
     def login(self):
-        with open(self.user_json_file, 'r') as file:
-            users = json.load(file)
+        user = (
+            db.session
+                .query(Usuario)
+                .filter(Usuario.nombre_usuario == self.username)
+                .with_entities(
+                    Usuario.id,
+                    Usuario.nombre_usuario,
+                    Usuario.clave
+                )
+                .first()
+        )
 
-        if self.username in users and check_password_hash(
-            users[self.username]['password'], self.password
+        if user and check_password_hash(
+            user['clave'], self.password
         ):
             session['username'] = self.username
+            session['user_id'] = user['id']
         else:
             raise ValueError('Usuario o contraseña incorrectos')
 
@@ -36,26 +54,24 @@ class User:
         if self.password == self.confirm_password:
             hashed_password = generate_password_hash(self.password)
 
+            user_found = (
+                db.session
+                    .query(Usuario)
+                    .filter(Usuario.nombre_usuario == self.username)
+                    .first()
+            )
+            if user_found:
+                raise ValueError('El usuario ya existe')
+
             user = Usuario()
             user.nombre = self.name
             user.apellido = self.last_name
             user.nombre_usuario = self.username
-            user.correo = self.username
+            user.correo = self.email
             user.clave = hashed_password
             user.id_rol = '1'
             db.session.add(user)
             db.session.commit()
-
-            with open('users.json', 'r') as file:
-                users = json.load(file)
-
-            if self.username in users:
-                raise ValueError('El usuario ya existe')
-
-            users[self.username] = {'password': hashed_password}
-
-            with open(self.user_json_file, 'w') as file:
-                json.dump(users, file)
         else:
             raise ValueError('Las contraseñas no coinciden')
 

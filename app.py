@@ -13,10 +13,16 @@ def dashboard():
 @app.route("/", methods=["GET", "POST"])
 @app.route("/login", methods=["GET", "POST"])
 def login():
-    error = None
+    error = request.args.get('error', None)
+    tab = request.args.get('tab', 'login')
+
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+
+        if username == '' or password == '':
+            error = 'Por favor, ingrese su nombre de usuario y contraseña.'
+            return render_template("login.html", error=error)
 
         try:
             User(username, password).login()
@@ -24,7 +30,7 @@ def login():
         except ValueError as e:
             error = str(e.__str__())
 
-    return render_template("login.html", error=error)
+    return render_template("login.html", error=error, tab=tab)
 
 @app.route("/register", methods=["POST", "GET"])
 def register():
@@ -42,7 +48,7 @@ def register():
         except ValueError as e:
             error = str(e.__str__())
 
-    return render_template('signup.html', error=error)
+    return redirect(url_for('login', error=error, tab='register'))
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
