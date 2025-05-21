@@ -40,10 +40,10 @@ class User:
         )
 
         if user and check_password_hash(
-            user['clave'], self.password
+            user.clave, self.password
         ):
             session['username'] = self.username
-            session['user_id'] = user['id']
+            session['user_id'] = user.id
         else:
             raise ValueError('Usuario o contraseña incorrectos')
 

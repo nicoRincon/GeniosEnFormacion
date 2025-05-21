@@ -1,7 +1,5 @@
 import sys
 import os
-
-from sqlalchemy import text
 sys.path.append(
     os.path.abspath(
         os.path.join(
@@ -11,33 +9,36 @@ sys.path.append(
 )
 
 from src.db_connection import db, app
-from database.Usuarios.Rol import Rol
+from sqlalchemy import text
+from database.Paginas.TipoPagina import TipoPagina
 
 def up():
     with app.app_context():
         try:
-            roles = ['Superadmin', 'Profesor', 'Estudiante']
-            for nombre in roles:
-                rol = Rol(nombre_rol=nombre)
-                db.session.add(rol)
+            page_types = ['Modulo', 'Paginas', 'Sub-paginas']
+            for page_type in page_types:
+                page_type = TipoPagina(nombre_tipo_pagina=page_type)
+                db.session.add(page_type)
             db.session.commit()
-            print("Roles insertados")
+            print("Tipos de paginas insertadas")
         except Exception as e:
             db.session.rollback()
-            print(f"Error insertando roles: {e}")
+            print(f"Error insertando tipos de paginas: {e}")
 
 def down():
     with app.app_context():
         try:
-            db.session.query(Rol).filter(Rol.nombre_rol.in_(['Superadmin', 'Profesor', 'Estudiante'])).delete(synchronize_session=False)
+            TipoPagina.query.filter(
+                TipoPagina.nombre_tipo_pagina.in_(['Modulo', 'Paginas', 'Sub-paginas'])
+            ).delete(synchronize_session=False)
             db.session.commit()
 
             db.session.execute(text('ALTER TABLE tipos_pagina AUTO_INCREMENT = 1;'))
             db.session.commit()
-            print("Roles eliminados")
+            print("Tipos de paginas eliminadas")
         except Exception as e:
             db.session.rollback()
-            print(f"Error eliminando roles: {e}")
+            print(f"Error eliminando tipos de paginas: {e}")
 
 if __name__ == "__main__":
     import sys

@@ -1,14 +1,29 @@
 from flask import redirect, render_template, url_for, request, session
+from src.pages.pages_by_users_service import PagesByUsers
 from src.login.login import User
 from src.db_connection import app
 
 
 @app.route("/dashboard", methods=["POST", "GET"])
 def dashboard():
-    if 'username' in session:
-        return render_template('dashboard.html', username=session['username'])
-    else:
+    error = request.args.get('error', None)
+
+    if 'username' not in session:
         return redirect(url_for('login'))
+
+    try:
+        pages_by_users = PagesByUsers().get_page_by_user_id(session['user_id'])
+    except ValueError as e:
+        error = str(e.__str__())
+        pages_by_users = []
+
+    return render_template(
+        'dashboard.html',
+        username=session['username'],
+        pages_by_users=pages_by_users,
+        error=error
+    )
+
 
 @app.route("/", methods=["GET", "POST"])
 @app.route("/login", methods=["GET", "POST"])
@@ -43,7 +58,7 @@ def register():
         password = request.form['password_register']
         confirm_password = request.form['confirm_password_register']
         try:
-            User( username, password, confirm_password, name, last_name).register()
+            User( username, password, confirm_password, name, last_name, email).register()
             return redirect(url_for('login'))
         except ValueError as e:
             error = str(e.__str__())

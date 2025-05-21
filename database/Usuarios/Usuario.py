@@ -13,3 +13,5 @@ class Usuario(db.Model):
     clave = db.Column(db.String(256), nullable=False)
     fecha_creacion = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     fecha_actualizacion = db.Column(db.DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
+
+    rol = db.relationship('Rol', back_populates='usuarios')
