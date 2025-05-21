@@ -360,9 +360,9 @@ def up():
                                 "pregunta": "Relaciona cada imagen con la letra inicial correcta",
                                 "tipo": "relacionar",
                                 "items": [
-                                    {"imagen": "oso.jpg", "letra": "O"},
-                                    {"imagen": "uva.jpg", "letra": "U"},
-                                    {"imagen": "elefante.jpg", "letra": "E"}
+                                    {"imagen": <img src="/static/img/actividades/oso.jpg" alt="Oso">, "letra": "O"},
+                                    {"imagen": <img src="/static/img/actividades/uva.jpg" alt="Uva">, "letra": "U"},
+                                    {"imagen": <img src="/static/img/actividades/elefante.jpg" alt="Elefante">, "letra": "E"}
                                 ]
                             },
                             {
