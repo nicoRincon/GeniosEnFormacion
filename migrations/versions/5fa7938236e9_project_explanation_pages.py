@@ -1,7 +1,7 @@
 """Project explanation pages
 
-Revision ID: 6eeff10eac33
-Revises: 3f19c1ea5c7d
+Revision ID: 5fa7938236e9
+Revises: 64d3d4b6148d
 Create Date: 2025-05-21 15:44:07.632799
 
 """
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '6eeff10eac33'
-down_revision = '3f19c1ea5c7d'
+revision = '5fa7938236e9'
+down_revision = '64d3d4b6148d'
 branch_labels = None
 depends_on = None
 
