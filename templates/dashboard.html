@@ -2,6 +2,26 @@
 
 {% block title %}Dashboard{% endblock %}
 
+{% block header %}
+    {% if error %}
+        <script>
+            window.onload = function() {
+                Swal.fire({
+                    title: '¡Error!',
+                    text: '{{ error }}',
+                    icon: 'error',
+                    confirmButtonText: 'Ok'
+                });
+            };
+        </script>
+    {% endif %}
+{% endblock %}
+
 {% block content %}
-Hello, {{ username }}! Welcome to your dashboard.
+    {% if error %}
+        <div class="alert alert-danger" role="alert">
+            {{ error }}
+        </div>
+    {% endif %}
+    Hello, {{ username }}! Welcome to your dashboard.
 {% endblock %}

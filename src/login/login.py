@@ -27,14 +27,16 @@ class User:
         return f"User({self.username}, {self.password})"
 
     def login(self):
-        user = (
+        user: Usuario = (
             db.session
                 .query(Usuario)
                 .filter(Usuario.nombre_usuario == self.username)
                 .with_entities(
                     Usuario.id,
                     Usuario.nombre_usuario,
-                    Usuario.clave
+                    Usuario.clave,
+                    Usuario.nombre,
+                    Usuario.apellido,
                 )
                 .first()
         )
@@ -44,6 +46,7 @@ class User:
         ):
             session['username'] = self.username
             session['user_id'] = user.id
+            session['complete_name'] = f"{user.nombre} {user.apellido}"
         else:
             raise ValueError('Usuario o contraseña incorrectos')
 
