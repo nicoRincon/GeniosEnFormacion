@@ -26,22 +26,24 @@ class PagesByUsers:
 
         hierarchy = []
 
-        for module in page_by_user:
-            if module.id_tipo_pagina == 1:
-                module_data = {
-                    "module": module.nombre_pagina,
-                    "pages": []
-                }
+        modules = [page for page in page_by_user if page.id_pagina_padre is None and page.id_tipo_pagina == 1]
+        pages = [page for page in page_by_user if page.id_pagina_padre is not None and page.id_tipo_pagina == 2]
+        sub_pages = [page for page in page_by_user if page.id_pagina_padre is not None and page.id_tipo_pagina == 3]
 
-                # Busca páginas hijas
-                for page in page_by_user:
-                    if page.id_pagina_padre == module.id:
-                        dict_pages = {
-                            "page": page.nombre_pagina,
-                            "route": page.ruta,
-                            "sub_page": [{"sub_page": sp.nombre_pagina, "route": sp.ruta} for sp in page_by_user if sp.id_pagina_padre == page.id]
-                        }
-                        module_data["pages"].append(dict_pages)
-                hierarchy.append(module_data)
+        for module in modules:
+            module_data = {
+                "module": module.nombre_pagina,
+                "pages": []
+            }
+
+            for page in pages:
+                if page.id_pagina_padre == module.id:
+                    dict_pages = {
+                        "page": page.nombre_pagina,
+                        "route": page.ruta,
+                        "sub_page": [{"sub_page": sp.nombre_pagina, "route": sp.ruta} for sp in sub_pages if sp.id_pagina_padre == page.id]
+                    }
+                    module_data["pages"].append(dict_pages)
+            hierarchy.append(module_data)
 
         return hierarchy

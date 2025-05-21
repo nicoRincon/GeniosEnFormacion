@@ -19,7 +19,23 @@ depends_on = None
 def upgrade():
     conn = op.get_bind()
     result = conn.execute(
-        sa.text("SELECT id FROM paginas WHERE nombre_pagina = 'Entendimiento del Negocio'")
+        sa.text("""
+                select
+                    m.id
+                from
+                    paginas m
+                where
+                    m.nombre_pagina = 'Entendimiento del Negocio'
+                union
+                select
+                    p.id
+                from
+                    paginas m
+                inner join paginas p on
+                    p.id_pagina_padre = m.id
+                where
+                    m.nombre_pagina = 'Entendimiento del Negocio'"""
+        )
     )
     rol_pages = [{ 'id_rol': 1, 'id_pagina': row[0] } for row in result.fetchall()]
 
@@ -36,7 +52,23 @@ def upgrade():
 def downgrade():
     conn = op.get_bind()
     result = conn.execute(
-        sa.text("SELECT id FROM paginas WHERE nombre_pagina = 'Entendimiento del Negocio'")
+        sa.text("""
+            select
+                m.id
+            from
+                paginas m
+            where
+                m.nombre_pagina = 'Entendimiento del Negocio'
+            union
+            select
+                p.id
+            from
+                paginas m
+            inner join paginas p on
+                p.id_pagina_padre = m.id
+            where
+                m.nombre_pagina = 'Entendimiento del Negocio'"""
+        )
     )
 
     ids = [row[0] for row in result.fetchall()]
