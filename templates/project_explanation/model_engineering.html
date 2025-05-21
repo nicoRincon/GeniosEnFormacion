@@ -1,0 +1,40 @@
+{% extends "templates/base.html" %}
+
+{% block title %}Ingenieria del modelo{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-4">Ingenieria del modelo</h2>
+
+    <h4>Selección de Algoritmos: Elegir técnicas adecuadas según el problema y datos </h4>
+    <ul class="list-group mb-4">
+        <li class="list-group-item">El modelo que usamos para nuestro proyecto está dirigido a un aprendizaje supervisado, usando la categoría de clasificación de datos, esto con el fin, de evaluar el conocimiento de los estudiantes y darle información de acuerdo a grado, para esto seleccionamos dos tipos: </li>
+        <ul class="list-group mb-4">
+            <li class="list-group-item">Árbol de decisiones: Usamos este método, por su capacidad de tomar decisiones con los datos que ingresa el estudiante. Esto facilita el entendimiento del modelo y organiza de la mejor manera a los estudiantes, de acuerdo con nivel de conocimiento. </li>
+            <li class="list-group-item">K-NN(Vecinos más cercanos):  Este método clasifica a los estudiantes, de acuerdo a sus respuestas, para brindarles un contendido educativo de manera personalizada, y poder obtener patrones de aprendizaje comunes.   </li>    
+        </ul>
+    </ul>
+
+    <h4>Entrenamiento: Aplicar datos preparados al algoritmo seleccionado </h4>
+    <ul class="list-group mb-4">
+        <li class="list-group-item">Los datos utilizados para entrenar a los modelos fueron datos reales y simulados, se preparan los datos de acuerdo con las respuestas de los estudiantes en evaluación, cuestionarios, conversaciones con el chatbot, etc.  </li>
+        <li class="list-group-item">Estos datos serán analizados para etiquetar los niveles de conocimiento (básico, medio, avanzado). Cada modelo será entrenado con datos con el objetivo de que pueda clasificar correctamente a nuevos estudiantes y proponer contenidos adecuados a su perfil.  </li>
+    </ul>
+
+    <h4>Validación: Verificar desempeño con datos no utilizados en entrenamiento </h4>
+
+    <h4>Una vez que se entrenado el modelo, se realiza una prueba con un conjunto de datos que no fueron incluidos con el fin de comprobar que tan preciso es el algoritmo para clasificar correctamente a los estudiantes según su nivel de conocimiento. 
+        Se utilizarán métricas como precisión, recall y matriz de confusión para evaluar el rendimiento del modelo. 
+        Esta fase es clave para garantizar que el modelo sea útil y confiable en la práctica educativa. </h4>
+
+    <h4>Ajuste de Hiperparámetros: Optimizar configuraciones para mejorar rendimiento  </h4>
+    <ul class="list-group mb-4">
+        <li class="list-group-item">Se realizarán pruebas ajustando los hiperparámetros de cada algoritmo para optimizar su rendimiento: </li>
+        <ul class="list-group mb-4">
+            <li class="list-group-item">En Árbol de Decisión, se ajustarán parámetros como la profundidad máxima del árbol y el criterio de división. </li>
+            <li class="list-group-item">En K-NN, se probarán distintos valores de K (número de vecinos) y funciones de distancia. </li>
+        </ul>
+        <li class="list-group-item">Este proceso se realizará mediante una prueba para encontrar la mejor combinación de parámetros que logren una clasificación precisa y generalizable para distintos estudiantes. </li>  
+    </ul>        
+</div>
+{% endblock %}

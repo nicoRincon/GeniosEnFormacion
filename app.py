@@ -73,9 +73,10 @@ def logout():
     User(session['username'], '').logout()
     return redirect(url_for('login'))
 
-@app.route('/business_understanding')
+@app.route('/business_understanding', methods=['GET'])
 def business_understanding():
-    return render_template('project_explanation/business_understanding.html')
+    return render_template('project_explanation/business_understanding.html', username=session['username'])
+
 
 @app.context_processor
 def inject_pages_by_users():
