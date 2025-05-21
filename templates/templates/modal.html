@@ -1,0 +1,30 @@
+<div class="modal fade" tabindex="-1" role="dialog" aria-hidden="true"
+    {% block modal_data %}
+        id="roleModal" aria-labelledby="roleModalLabel"
+    {% endblock %}
+>
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="roleModalLabel">
+                    {% block modal_title %}
+                        Title modal
+                    {% endblock %}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form
+                {% block form_action %}
+                {% endblock %}
+            >
+                <div class="modal-body">
+                    {% block modal_body %}{% endblock %}
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
