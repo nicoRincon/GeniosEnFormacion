@@ -3,6 +3,8 @@ import os
 from sqlalchemy import text
 from datetime import datetime
 from werkzeug.security import generate_password_hash
+from flask_seeder import Seeder, Faker, generator
+
 
 sys.path.append(
     os.path.abspath(
