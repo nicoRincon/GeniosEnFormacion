@@ -9,3 +9,4 @@ python-dotenv
 Flask-Migrate
 flask-sqlalchemy
 openpyxl
+setuptools

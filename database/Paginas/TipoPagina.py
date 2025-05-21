@@ -1,7 +1,4 @@
-from flask_sqlalchemy import SQLAlchemy
-from datetime import datetime
-
-db = SQLAlchemy()
+from src.db_connection import db
 
 class TipoPagina(db.Model):
     __tablename__ = 'tipos_pagina'

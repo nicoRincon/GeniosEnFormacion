@@ -1,7 +1,7 @@
-from flask_sqlalchemy import SQLAlchemy
+from src.db_connection import db
 from datetime import datetime, timezone
 
-db = SQLAlchemy()
+
 
 class Tema(db.Model):
     __tablename__ = 'temas'

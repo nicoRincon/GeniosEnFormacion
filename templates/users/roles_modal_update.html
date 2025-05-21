@@ -1,0 +1,25 @@
+{% extends "templates/modal.html" %}
+
+<!-- Modal update -->
+{% block modal_data %}
+    id="role-modal-update" aria-labelledby="roleModalUpdateLabel"
+{% endblock %}
+
+{% block modal_title %}
+    Actualizar Rol
+{% endblock %}
+
+{% block form_action %}
+    id="edit-role-form" method="post"
+{% endblock %}
+
+{% block modal_body %}
+    <input type="hidden" name="_method" value="PATCH">
+    <input type="hidden" id="edit-role-id" name="edit_role_id">
+    <div class="form-group">
+        <label for="edit-role-name">Nombre del rol</label>
+        <input
+            type="text" class="form-control"
+            id="edit-role-name" name="edit_rol_name" required>
+    </div>
+{% endblock %}

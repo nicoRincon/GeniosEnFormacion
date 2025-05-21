@@ -1,7 +1,6 @@
-from flask_sqlalchemy import SQLAlchemy
+from src.db_connection import db
 from datetime import datetime, timezone
 
-db = SQLAlchemy()
 
 class Pagina(db.Model):
     __tablename__ = 'paginas'
@@ -13,3 +12,6 @@ class Pagina(db.Model):
     ruta = db.Column(db.String(20))
     fecha_creacion = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     fecha_actualizacion = db.Column(db.DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
+
+    rol_paginas = db.relationship('RolPagina', back_populates='pagina')
+    subpaginas = db.relationship('Pagina', backref=db.backref('padre', remote_side=[id]))

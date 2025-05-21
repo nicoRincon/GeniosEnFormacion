@@ -18,6 +18,14 @@
         </li>
     </ul>
 
+    {% if tab == "register" %}
+        <script>
+            window.onload = () => {
+                changeLoginPages('register');
+            }
+        </script>
+    {% endif %}
+
     {% if error %}
         <script>
             Swal.fire({
