@@ -1,0 +1,565 @@
+{% extends "templates/base.html" %}
+
+{% block title %}Evaluación: {{ evaluacion.titulo }} - Genios en Formación{% endblock %}
+
+{% block add_head %}
+<style>
+    :root {
+        --primary-color: #4e73df;
+        --secondary-color: #FF9E1B;
+        --accent-color: #1CC88A;
+        --text-color: #5a5c69;
+        --light-bg: #f8f9fc;
+        --card-bg: #ffffff;
+        --header-bg: #3b5998;
+    }
+
+    body {
+        background-color: var(--light-bg);
+        color: var(--text-color);
+    }
+
+    .dashboard-container {
+        min-height: calc(100vh - 60px - 80px);
+        padding: 20px;
+        position: relative;
+    }
+
+    /* Learning Path visualization */
+    .learning-path {
+        position: relative;
+        padding-left: 50px;
+        margin-bottom: 30px;
+    }
+
+    .learning-path::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 25px;
+        width: 3px;
+        height: 100%;
+        background-color: var(--secondary-color);
+        border-radius: 3px;
+    }
+
+    .learning-step {
+        position: relative;
+        margin-bottom: 15px;
+        padding: 15px;
+        background-color: var(--card-bg);
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease;
+    }
+
+    .learning-step:hover {
+        transform: translateX(5px);
+    }
+
+    .learning-step::before {
+        content: '';
+        position: absolute;
+        left: -35px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 20px;
+        height: 20px;
+        background-color: var(--secondary-color);
+        border-radius: 50%;
+        z-index: 1;
+    }
+
+    .learning-step.active::before {
+        background-color: var(--accent-color);
+        box-shadow: 0 0 0 5px rgba(28, 200, 138, 0.3);
+    }
+
+    .learning-step.completed::before {
+        background-color: var(--accent-color);
+    }
+
+    .learning-step .step-title {
+        font-weight: bold;
+        color: var(--primary-color);
+    }
+
+    /* Content area */
+    .content-area {
+        background-color: var(--card-bg);
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        margin-bottom: 20px;
+    }
+
+    .content-heading {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--primary-color);
+        margin-bottom: 15px;
+        border-bottom: 2px dashed #e0e0ff;
+        padding-bottom: 10px;
+    }
+
+    /* Quiz styles */
+    .quiz-question {
+        display: none;
+    }
+
+    .quiz-question.active {
+        display: block;
+    }
+
+    .quiz-option {
+        padding: 10px;
+        border: 2px solid #e0e0ff;
+        border-radius: 10px;
+        margin-bottom: 10px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+
+    .quiz-option:hover {
+        border-color: var(--primary-color);
+        background-color: #f8f9ff;
+    }
+
+    .quiz-option.selected {
+        border-color: var(--primary-color);
+        background-color: #e6eaff;
+    }
+
+    .quiz-option.correct {
+        border-color: var(--accent-color);
+        background-color: #e0fff0;
+    }
+
+    .quiz-option.incorrect {
+        border-color: #dc3545;
+        background-color: #ffe0e0;
+    }
+
+    .quiz-progress {
+        height: 10px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+
+    /* Results styles */
+    .results-card {
+        text-align: center;
+        padding: 30px;
+    }
+
+    .results-badge {
+        width: 150px;
+        height: 150px;
+        margin: 0 auto 20px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3rem;
+        color: white;
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--accent-color) 100%);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Animated background */
+    .animated-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        opacity: 0.4;
+        overflow: hidden;
+    }
+
+    .animated-shape {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(50px);
+    }
+
+    .shape-1 {
+        width: 300px;
+        height: 300px;
+        background-color: rgba(78, 115, 223, 0.4);
+        top: 10%;
+        left: -5%;
+        animation: float 15s infinite alternate;
+    }
+
+    .shape-2 {
+        width: 250px;
+        height: 250px;
+        background-color: rgba(255, 158, 27, 0.3);
+        bottom: 10%;
+        right: -5%;
+        animation: float 18s infinite alternate-reverse;
+    }
+
+    @keyframes float {
+        0% {
+            transform: translate(0, 0) rotate(0deg);
+        }
+        100% {
+            transform: translate(50px, 50px) rotate(15deg);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Animated background -->
+    <div class="animated-bg">
+        <div class="animated-shape shape-1"></div>
+        <div class="animated-shape shape-2"></div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2><i class="fas fa-check-circle"></i> Evaluación del Tema</h2>
+        <a href="{{ url_for('actividades', id_contenido=contenido.id) }}" class="btn btn-outline-primary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i> Volver a Actividades
+        </a>
+    </div>
+
+    <!-- Learning Path Visualization -->
+    <div class="learning-path">
+        <div class="learning-step completed" id="contenido-step">
+            <div class="step-title"><i class="fas fa-book me-2"></i> Contenido</div>
+            <div class="step-description">Aprende sobre el tema</div>
+            <a href="{{ url_for('contenido', id_tema=contenido.id_tema) }}" class="stretched-link"></a>
+        </div>
+        
+        <div class="learning-step completed" id="ejemplos-step">
+            <div class="step-title"><i class="fas fa-lightbulb me-2"></i> Ejemplos</div>
+            <div class="step-description">Ver ejemplos prácticos</div>
+            <a href="{{ url_for('contenido', id_tema=contenido.id_tema) }}#ejemplos" class="stretched-link"></a>
+        </div>
+        
+        <div class="learning-step completed" id="actividades-step">
+            <div class="step-title"><i class="fas fa-tasks me-2"></i> Actividades</div>
+            <div class="step-description">Practica lo aprendido</div>
+            <a href="{{ url_for('actividades', id_contenido=contenido.id) }}" class="stretched-link"></a>
+        </div>
+        
+        <div class="learning-step active" id="evaluacion-step">
+            <div class="step-title"><i class="fas fa-check-circle me-2"></i> Evaluación</div>
+            <div class="step-description">Demuestra lo que sabes</div>
+        </div>
+    </div>
+
+    <!-- Alert -->
+    <div class="alert alert-warning mb-4">
+        <div class="d-flex">
+            <div class="me-3">
+                <i class="fas fa-star fa-2x"></i>
+            </div>
+            <div>
+                <h5 class="alert-heading">¡Es hora de demostrar lo que has aprendido!</h5>
+                <p class="mb-0">Completa esta evaluación para ganar tu insignia de "Maestro de {{ contenido.titulo }}".</p>
+            </div>
+        </div>
+    </div>
+
+    {% if not evaluacion %}
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle me-2"></i> No hay evaluación disponible para este contenido.
+    </div>
+    {% else %}
+    <!-- Quiz Section -->
+    <div id="quiz-section">
+        <div class="progress quiz-progress">
+            <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%" id="quiz-progress-bar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+        </div>
+        
+        <form id="quiz-form">
+            {% set preguntas = evaluacion.lista_preguntas|from_json %}
+            {% for pregunta in preguntas %}
+            <div class="card mb-4 quiz-question {% if loop.first %}active{% endif %}" id="question-{{ loop.index }}">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Pregunta {{ loop.index }}</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">{{ pregunta.pregunta }}</p>
+                    
+                    {% if pregunta.tipo == 'opcion_multiple' %}
+                        {% for opcion in pregunta.opciones %}
+                        <div class="quiz-option" data-value="{{ opcion }}" onclick="selectOption(this, 'question-{{ loop.parent.loop.index }}')">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <i class="far fa-circle"></i>
+                                </div>
+                                <div>{{ opcion }}</div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% elif pregunta.tipo == 'seleccion_multiple' %}
+                        {% for opcion in pregunta.opciones %}
+                        <div class="quiz-option" data-value="{{ opcion }}" onclick="toggleMultiOption(this)">
+                            <div class="d-flex align-items-center">
+                                <div class="me-3">
+                                    <i class="far fa-square"></i>
+                                </div>
+                                <div>{{ opcion }}</div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    {% elif pregunta.tipo == 'relacionar' %}
+                        <div class="row">
+                            {% for item in pregunta.items %}
+                            <div class="col-md-4 mb-3">
+                                <div class="card">
+                                    <img src="{{ url_for('static', filename='img/actividades/' ~ item.imagen) }}" alt="{{ item.letra }}" class="card-img-top">
+                                    <div class="card-body text-center">
+                                        <select class="form-select relacionar-select">
+                                            <option selected>Selecciona una letra</option>
+                                            <option value="A">A</option>
+                                            <option value="E">E</option>
+                                            <option value="I">I</option>
+                                            <option value="O">O</option>
+                                            <option value="U">U</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% elif pregunta.tipo == 'completar' %}
+                        <div class="text-center mb-3">
+                            <div class="d-inline-flex align-items-center">
+                                <div class="letra-placeholder me-2">P</div>
+                                <div class="letra-placeholder me-2">E</div>
+                                <select class="form-select d-inline-block" style="width: auto; margin: 0 10px;">
+                                    <option selected>Selecciona</option>
+                                    {% for opcion in pregunta.opciones %}
+                                    <option value="{{ opcion }}">{{ opcion }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="letra-placeholder ms-2">R</div>
+                                <div class="letra-placeholder ms-2">O</div>
+                            </div>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+            
+            <!-- Quiz Navigation -->
+            <div class="d-flex justify-content-between mt-4 quiz-navigation">
+                <button type="button" class="btn btn-outline-primary" id="prev-btn" style="display: none;" onclick="prevQuestion()">
+                    <i class="fas fa-arrow-left me-1"></i> Anterior
+                </button>
+                <button type="button" class="btn btn-primary" id="next-btn" onclick="nextQuestion()">
+                    Siguiente <i class="fas fa-arrow-right ms-1"></i>
+                </button>
+                <button type="button" class="btn btn-success" id="submit-btn" style="display: none;" onclick="submitQuiz()">
+                    <i class="fas fa-check-circle me-1"></i> Finalizar evaluación
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <!-- Results Section (hidden initially) -->
+    <div id="quiz-results" style="display: none;">
+        <div class="card border-success">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0"><i class="fas fa-trophy me-2"></i> ¡Felicitaciones!</h4>
+            </div>
+            <div class="card-body results-card">
+                <div class="results-badge">
+                    <i class="fas fa-award"></i>
+                </div>
+                <h3 class="card-title">¡Has completado la evaluación!</h3>
+                <p class="card-text h5 mb-4">Obtuviste <span class="text-success fw-bold" id="score-display">0 de 0</span> respuestas correctas</p>
+                
+                <div class="progress mb-4" style="height: 30px;">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: 0%" id="results-progress-bar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">0%</div>
+                </div>
+                
+                <div class="alert alert-primary" role="alert">
+                    <strong>¡Ganaste la insignia "Maestro de {{ contenido.titulo }}"!</strong>
+                    <p class="mb-0">Esta insignia ha sido añadida a tu colección de logros.</p>
+                </div>
+                
+                <div class="d-grid gap-2 d-md-flex justify-content-md-center mt-4">
+                    <button class="btn btn-outline-primary" onclick="reviewQuiz()">
+                        <i class="fas fa-search me-1"></i> Revisar respuestas
+                    </button>
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-primary">
+                        <i class="fas fa-home me-1"></i> Volver al Dashboard
+                    </a>
+                    <button class="btn btn-success">
+                        <i class="fas fa-forward me-1"></i> Siguiente tema
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    // Quiz logic
+    let currentQuestion = 1;
+    const totalQuestions = document.querySelectorAll('.quiz-question').length;
+    const userAnswers = {};
+    
+    function selectOption(optionEl, questionId) {
+        // Remove selected class from all options in this question
+        const allOptions = document.querySelectorAll(`#${questionId} .quiz-option`);
+        allOptions.forEach(option => {
+            option.classList.remove('selected');
+            option.querySelector('i').className = 'far fa-circle';
+        });
+        
+        // Add selected class to clicked option
+        optionEl.classList.add('selected');
+        optionEl.querySelector('i').className = 'fas fa-circle';
+        
+        // Store answer
+        userAnswers[questionId] = optionEl.dataset.value;
+    }
+    
+    function toggleMultiOption(optionEl) {
+        // Toggle selected class
+        if (optionEl.classList.contains('selected')) {
+            optionEl.classList.remove('selected');
+            optionEl.querySelector('i').className = 'far fa-square';
+        } else {
+            optionEl.classList.add('selected');
+            optionEl.querySelector('i').className = 'fas fa-check-square';
+        }
+        
+        // Store answers (for multi-select)
+        const questionId = optionEl.closest('.quiz-question').id;
+        if (!userAnswers[questionId]) {
+            userAnswers[questionId] = [];
+        }
+        
+        const value = optionEl.dataset.value;
+        if (optionEl.classList.contains('selected')) {
+            // Add to answers if not already there
+            if (!userAnswers[questionId].includes(value)) {
+                userAnswers[questionId].push(value);
+            }
+        } else {
+            // Remove from answers
+            userAnswers[questionId] = userAnswers[questionId].filter(item => item !== value);
+        }
+    }
+    
+    function nextQuestion() {
+        // Hide current question
+        document.getElementById(`question-${currentQuestion}`).classList.remove('active');
+        
+        // Show next question
+        currentQuestion++;
+        document.getElementById(`question-${currentQuestion}`).classList.add('active');
+        
+        // Update progress bar
+        updateQuizProgress();
+        
+        // Update navigation buttons
+        updateQuizNavigation();
+    }
+    
+    function prevQuestion() {
+        // Hide current question
+        document.getElementById(`question-${currentQuestion}`).classList.remove('active');
+        
+        // Show previous question
+        currentQuestion--;
+        document.getElementById(`question-${currentQuestion}`).classList.add('active');
+        
+        // Update progress bar
+        updateQuizProgress();
+        
+        // Update navigation buttons
+        updateQuizNavigation();
+    }
+    
+    function updateQuizProgress() {
+        const progressPercentage = ((currentQuestion - 1) / totalQuestions) * 100;
+        const progressBar = document.getElementById('quiz-progress-bar');
+        progressBar.style.width = `${progressPercentage}%`;
+        progressBar.innerText = `${Math.round(progressPercentage)}%`;
+        progressBar.setAttribute('aria-valuenow', progressPercentage);
+    }
+    
+    function updateQuizNavigation() {
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const submitBtn = document.getElementById('submit-btn');
+        
+        // Show/hide previous button
+        prevBtn.style.display = currentQuestion > 1 ? 'block' : 'none';
+        
+        // Show/hide next and submit buttons
+        if (currentQuestion === totalQuestions) {
+            nextBtn.style.display = 'none';
+            submitBtn.style.display = 'block';
+        } else {
+            nextBtn.style.display = 'block';
+            submitBtn.style.display = 'none';
+        }
+    }
+    
+    function submitQuiz() {
+        // Calculate score (for demo purposes, always show 4/5 correct)
+        const score = 4;
+        const percentage = (score / totalQuestions) * 100;
+        
+        // Update result display
+        document.getElementById('score-display').innerText = `${score} de ${totalQuestions}`;
+        const resultsProgressBar = document.getElementById('results-progress-bar');
+        resultsProgressBar.style.width = `${percentage}%`;
+        resultsProgressBar.innerText = `${Math.round(percentage)}%`;
+        resultsProgressBar.setAttribute('aria-valuenow', percentage);
+        
+        // Hide quiz, show results
+        document.getElementById('quiz-section').style.display = 'none';
+        document.getElementById('quiz-results').style.display = 'block';
+    }
+    
+    function reviewQuiz() {
+        // Go back to the quiz view with answers shown (simplified for demo)
+        document.getElementById('quiz-results').style.display = 'none';
+        document.getElementById('quiz-section').style.display = 'block';
+        
+        // Reset to first question
+        document.querySelectorAll('.quiz-question').forEach((el, index) => {
+            el.classList.remove('active');
+            if (index === 0) el.classList.add('active');
+        });
+        
+        currentQuestion = 1;
+        updateQuizProgress();
+        updateQuizNavigation();
+        
+        // Show correct answers for demo (would normally be based on actual correct answers)
+        setTimeout(() => {
+            // Mark some options as correct/incorrect for demo
+            const option1 = document.querySelector('#question-1 .quiz-option:nth-child(3)');
+            option1.classList.add('correct');
+            
+            const option2 = document.querySelector('#question-2 .quiz-option:nth-child(2)');
+            option2.classList.add('incorrect');
+            
+            // Alert user
+            alert('Revisa las respuestas marcadas. Las correctas aparecen en verde y las incorrectas en rojo.');
+        }, 500);
+    }
+    
+    // Initialize
+    document.addEventListener('DOMContentLoaded', function() {
+        updateQuizProgress();
+        updateQuizNavigation();
+    });
+</script>
+{% endblock %}
