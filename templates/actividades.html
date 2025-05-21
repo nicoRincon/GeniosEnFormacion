@@ -1,0 +1,327 @@
+{% extends "templates/base.html" %}
+
+{% block title %}Actividades: {{ contenido.titulo }} - Genios en Formación{% endblock %}
+
+{% block add_head %}
+<style>
+    :root {
+        --primary-color: #4e73df;
+        --secondary-color: #FF9E1B;
+        --accent-color: #1CC88A;
+        --text-color: #5a5c69;
+        --light-bg: #f8f9fc;
+        --card-bg: #ffffff;
+        --header-bg: #3b5998;
+    }
+
+    body {
+        background-color: var(--light-bg);
+        color: var(--text-color);
+    }
+
+    .dashboard-container {
+        min-height: calc(100vh - 60px - 80px);
+        padding: 20px;
+        position: relative;
+    }
+
+    /* Learning Path visualization */
+    .learning-path {
+        position: relative;
+        padding-left: 50px;
+        margin-bottom: 30px;
+    }
+
+    .learning-path::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 25px;
+        width: 3px;
+        height: 100%;
+        background-color: var(--secondary-color);
+        border-radius: 3px;
+    }
+
+    .learning-step {
+        position: relative;
+        margin-bottom: 15px;
+        padding: 15px;
+        background-color: var(--card-bg);
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        transition: transform 0.3s ease;
+    }
+
+    .learning-step:hover {
+        transform: translateX(5px);
+    }
+
+    .learning-step::before {
+        content: '';
+        position: absolute;
+        left: -35px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 20px;
+        height: 20px;
+        background-color: var(--secondary-color);
+        border-radius: 50%;
+        z-index: 1;
+    }
+
+    .learning-step.active::before {
+        background-color: var(--accent-color);
+        box-shadow: 0 0 0 5px rgba(28, 200, 138, 0.3);
+    }
+
+    .learning-step.completed::before {
+        background-color: var(--accent-color);
+    }
+
+    .learning-step .step-title {
+        font-weight: bold;
+        color: var(--primary-color);
+    }
+
+    /* Content area */
+    .content-area {
+        background-color: var(--card-bg);
+        border-radius: 15px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        margin-bottom: 20px;
+    }
+
+    .content-heading {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: var(--primary-color);
+        margin-bottom: 15px;
+        border-bottom: 2px dashed #e0e0ff;
+        padding-bottom: 10px;
+    }
+
+    /* Actividad cards */
+    .actividad-card {
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .actividad-card .card-header {
+        font-weight: bold;
+    }
+
+    .actividad-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .actividad-content {
+        padding: 20px;
+        min-height: 200px;
+    }
+
+    /* Interactive elements */
+    .letra-placeholder {
+        display: inline-block;
+        width: 50px;
+        height: 50px;
+        line-height: 50px;
+        text-align: center;
+        margin: 5px;
+        border: 2px solid #ddd;
+        border-radius: 10px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        background-color: #fff;
+    }
+
+    .letra-dragable {
+        display: inline-block;
+        width: 50px;
+        height: 50px;
+        line-height: 50px;
+        text-align: center;
+        margin: 5px;
+        border: 2px solid var(--primary-color);
+        border-radius: 10px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        background-color: #e6eaff;
+        cursor: move;
+    }
+
+    .opciones button {
+        margin: 5px;
+        width: 50px;
+        height: 40px;
+        font-weight: bold;
+    }
+
+    /* Animated background */
+    .animated-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        opacity: 0.4;
+        overflow: hidden;
+    }
+
+    .animated-shape {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(50px);
+    }
+
+    .shape-1 {
+        width: 300px;
+        height: 300px;
+        background-color: rgba(78, 115, 223, 0.4);
+        top: 10%;
+        left: -5%;
+        animation: float 15s infinite alternate;
+    }
+
+    .shape-2 {
+        width: 250px;
+        height: 250px;
+        background-color: rgba(255, 158, 27, 0.3);
+        bottom: 10%;
+        right: -5%;
+        animation: float 18s infinite alternate-reverse;
+    }
+
+    @keyframes float {
+        0% {
+            transform: translate(0, 0) rotate(0deg);
+        }
+        100% {
+            transform: translate(50px, 50px) rotate(15deg);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Animated background -->
+    <div class="animated-bg">
+        <div class="animated-shape shape-1"></div>
+        <div class="animated-shape shape-2"></div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2><i class="fas fa-tasks"></i> Actividades de Aprendizaje</h2>
+        <a href="{{ url_for('contenido', id_tema=contenido.id_tema) }}" class="btn btn-outline-primary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i> Volver al Contenido
+        </a>
+    </div>
+
+    <!-- Learning Path Visualization -->
+    <div class="learning-path">
+        <div class="learning-step completed" id="contenido-step">
+            <div class="step-title"><i class="fas fa-book me-2"></i> Contenido</div>
+            <div class="step-description">Aprende sobre el tema</div>
+            <a href="{{ url_for('contenido', id_tema=contenido.id_tema) }}" class="stretched-link"></a>
+        </div>
+        
+        <div class="learning-step completed" id="ejemplos-step">
+            <div class="step-title"><i class="fas fa-lightbulb me-2"></i> Ejemplos</div>
+            <div class="step-description">Ver ejemplos prácticos</div>
+            <a href="{{ url_for('contenido', id_tema=contenido.id_tema) }}#ejemplos" class="stretched-link"></a>
+        </div>
+        
+        <div class="learning-step active" id="actividades-step">
+            <div class="step-title"><i class="fas fa-tasks me-2"></i> Actividades</div>
+            <div class="step-description">Practica lo aprendido</div>
+        </div>
+        
+        <div class="learning-step" id="evaluacion-step">
+            <div class="step-title"><i class="fas fa-check-circle me-2"></i> Evaluación</div>
+            <div class="step-description">Demuestra lo que sabes</div>
+            <a href="{{ url_for('evaluacion', id_contenido=contenido.id) }}" class="stretched-link"></a>
+        </div>
+    </div>
+
+    <div class="alert alert-info mb-4">
+        <div class="d-flex">
+            <div class="me-3">
+                <i class="fas fa-info-circle fa-2x"></i>
+            </div>
+            <div>
+                <h5 class="alert-heading">¡Es hora de practicar!</h5>
+                <p class="mb-0">Completa las siguientes actividades para reforzar lo que has aprendido sobre {{ contenido.titulo }}.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Actividades Content -->
+    {% if actividades %}
+        {% for actividad in actividades %}
+        <div class="card mb-4 actividad-card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Actividad {{ loop.index }}</h5>
+            </div>
+            <div class="card-body actividad-content">
+                {{ actividad.contenido|safe }}
+                
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
+                    <button class="btn btn-success verificar-btn">
+                        <i class="fas fa-check me-1"></i> Verificar respuestas
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        
+        <div class="d-flex justify-content-between mt-4">
+            <a href="{{ url_for('contenido', id_tema=contenido.id_tema) }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Volver al Contenido
+            </a>
+            <a href="{{ url_for('evaluacion', id_contenido=contenido.id) }}" class="btn btn-primary">
+                Siguiente: Evaluación <i class="fas fa-arrow-right ms-1"></i>
+            </a>
+        </div>
+    {% else %}
+        <div class="alert alert-warning">
+            <i class="fas fa-exclamation-triangle me-2"></i> No hay actividades disponibles para este contenido.
+        </div>
+        
+        <div class="d-flex justify-content-between mt-4">
+            <a href="{{ url_for('contenido', id_tema=contenido.id_tema) }}" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-left me-1"></i> Volver al Contenido
+            </a>
+            <a href="{{ url_for('evaluacion', id_contenido=contenido.id) }}" class="btn btn-primary">
+                Siguiente: Evaluación <i class="fas fa-arrow-right ms-1"></i>
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Lógica para las verificaciones de actividades
+        const verificarBtns = document.querySelectorAll('.verificar-btn');
+        
+        verificarBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Aquí iría la lógica para verificar las respuestas
+                // Como ejemplo, mostraremos una alerta de éxito
+                Swal.fire({
+                    title: '¡Muy bien!',
+                    text: 'Has completado esta actividad correctamente.',
+                    icon: 'success',
+                    confirmButtonText: 'Continuar'
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}

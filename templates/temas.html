@@ -1,0 +1,164 @@
+{% extends "templates/base.html" %}
+
+{% block title %}Temas de {{ materia.nombre }} - Genios en Formación{% endblock %}
+
+{% block add_head %}
+<style>
+    :root {
+        --primary-color: #4e73df;
+        --secondary-color: #FF9E1B;
+        --accent-color: #1CC88A;
+        --text-color: #5a5c69;
+        --light-bg: #f8f9fc;
+        --card-bg: #ffffff;
+        --header-bg: #3b5998;
+    }
+
+    body {
+        background-color: var(--light-bg);
+        color: var(--text-color);
+    }
+
+    .dashboard-container {
+        min-height: calc(100vh - 60px - 80px);
+        padding: 20px;
+        position: relative;
+    }
+
+    /* Tema Cards */
+    .tema-card {
+        background-color: var(--card-bg);
+        border-radius: 15px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        margin-bottom: 20px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        border-left: 5px solid var(--secondary-color);
+        cursor: pointer;
+    }
+
+    .tema-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .tema-card .tema-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+        color: var(--text-color);
+    }
+
+    .tema-card .tema-status {
+        font-size: 0.85rem;
+        padding: 3px 8px;
+        border-radius: 10px;
+        background-color: #e0e0ff;
+        color: var(--primary-color);
+    }
+
+    .tema-card.completed {
+        border-left-color: var(--accent-color);
+    }
+
+    .tema-card.completed .tema-status {
+        background-color: #e0fff0;
+        color: var(--accent-color);
+    }
+
+    /* Animated background */
+    .animated-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        opacity: 0.4;
+        overflow: hidden;
+    }
+
+    .animated-shape {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(50px);
+    }
+
+    .shape-1 {
+        width: 300px;
+        height: 300px;
+        background-color: rgba(78, 115, 223, 0.4);
+        top: 10%;
+        left: -5%;
+        animation: float 15s infinite alternate;
+    }
+
+    .shape-2 {
+        width: 250px;
+        height: 250px;
+        background-color: rgba(255, 158, 27, 0.3);
+        bottom: 10%;
+        right: -5%;
+        animation: float 18s infinite alternate-reverse;
+    }
+
+    @keyframes float {
+        0% {
+            transform: translate(0, 0) rotate(0deg);
+        }
+        100% {
+            transform: translate(50px, 50px) rotate(15deg);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Animated background -->
+    <div class="animated-bg">
+        <div class="animated-shape shape-1"></div>
+        <div class="animated-shape shape-2"></div>
+    </div>
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2><i class="fas fa-list"></i> Temas de {{ materia.nombre }}</h2>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-outline-primary btn-sm">
+            <i class="fas fa-arrow-left me-1"></i> Volver
+        </a>
+    </div>
+    
+    <div class="row">
+        {% for tema in temas %}
+        <div class="col-lg-4 col-md-6">
+            <a href="{{ url_for('contenido', id_tema=tema.id) }}" class="text-decoration-none">
+                <div class="tema-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <h5 class="tema-title mb-0">{{ tema.nombre }}</h5>
+                            <span class="tema-status">Por iniciar</span>
+                        </div>
+                        <p class="mt-2 mb-3">{{ tema.descripcion }}</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-book-open text-primary me-2"></i>
+                                <span>4 lecciones</span>
+                            </div>
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-clock text-warning me-2"></i>
+                                <span>15 min</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i> No hay temas disponibles para esta materia.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
