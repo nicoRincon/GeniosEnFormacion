@@ -1,6 +1,185 @@
 {% extends "templates/base.html" %}
 
-{% block title %}Dashboard{% endblock %}
+{% block title %}Dashboard - Genios en Formación{% endblock %}
+
+{% block add_head %}
+<style>
+    :root {
+        --primary-color: #4e73df;
+        --secondary-color: #FF9E1B;
+        --accent-color: #1CC88A;
+        --text-color: #5a5c69;
+        --light-bg: #f8f9fc;
+        --card-bg: #ffffff;
+        --header-bg: #3b5998;
+    }
+
+    body {
+        background-color: var(--light-bg);
+        color: var(--text-color);
+    }
+
+    .dashboard-container {
+        min-height: calc(100vh - 60px - 80px); /* Account for header and footer */
+        padding: 20px;
+        position: relative;
+    }
+
+    /* Materia Card */
+    .materia-card {
+        background-color: var(--card-bg);
+        border-radius: 20px;
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin-bottom: 30px;
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.08);
+        position: relative;
+        height: 220px;
+    }
+
+    .materia-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .materia-card .card-icon {
+        position: absolute;
+        right: 20px;
+        top: 20px;
+        font-size: 3rem;
+        opacity: 0.2;
+        color: var(--primary-color);
+    }
+
+    .materia-card .card-body {
+        padding: 1.5rem;
+        z-index: 2;
+    }
+
+    .materia-card .materia-title {
+        font-size: 1.5rem;
+        font-weight: bold;
+        margin-bottom: 10px;
+        color: var(--primary-color);
+    }
+
+    .materia-card .materia-description {
+        font-size: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .materia-card .progress {
+        height: 10px;
+        border-radius: 5px;
+    }
+
+    /* Progress Tracker */
+    .progress-tracker {
+        background-color: var(--card-bg);
+        border-radius: 15px;
+        padding: 15px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        margin-bottom: 20px;
+    }
+
+    .progress-bar {
+        height: 20px;
+        border-radius: 10px;
+    }
+
+    /* Animated backgrounds */
+    .animated-bg {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        opacity: 0.4;
+        overflow: hidden;
+    }
+
+    .animated-shape {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(50px);
+    }
+
+    .shape-1 {
+        width: 300px;
+        height: 300px;
+        background-color: rgba(78, 115, 223, 0.4);
+        top: 10%;
+        left: -5%;
+        animation: float 15s infinite alternate;
+    }
+
+    .shape-2 {
+        width: 250px;
+        height: 250px;
+        background-color: rgba(255, 158, 27, 0.3);
+        bottom: 10%;
+        right: -5%;
+        animation: float 18s infinite alternate-reverse;
+    }
+
+    .shape-3 {
+        width: 200px;
+        height: 200px;
+        background-color: rgba(28, 200, 138, 0.3);
+        bottom: 30%;
+        left: 20%;
+        animation: float 20s infinite alternate;
+    }
+
+    @keyframes float {
+        0% {
+            transform: translate(0, 0) rotate(0deg);
+        }
+        100% {
+            transform: translate(50px, 50px) rotate(15deg);
+        }
+    }
+
+    /* Character guide */
+    .character-guide {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        width: 120px;
+        height: 120px;
+        z-index: 1000;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+
+    .character-guide:hover {
+        transform: scale(1.1);
+    }
+
+    .character-speech-bubble {
+        position: absolute;
+        bottom: 110px;
+        right: 80px;
+        background: white;
+        border-radius: 20px;
+        padding: 15px;
+        width: 220px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        display: none;
+    }
+
+    .character-speech-bubble::after {
+        content: '';
+        position: absolute;
+        bottom: -10px;
+        right: 30px;
+        border-width: 10px 10px 0;
+        border-style: solid;
+        border-color: white transparent;
+    }
+</style>
+{% endblock %}
 
 {% block header %}
     {% if error %}
@@ -23,5 +202,101 @@
             {{ error }}
         </div>
     {% endif %}
-    Hello, {{ username }}! Welcome to your dashboard.
+
+    <div class="dashboard-container">
+    <!-- Animated background -->
+    <div class="animated-bg">
+        <div class="animated-shape shape-1"></div>
+        <div class="animated-shape shape-2"></div>
+        <div class="animated-shape shape-3"></div>
+    </div>
+
+    <!-- Progress Tracker -->
+    <div class="progress-tracker">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+            <h5 class="mb-0">Tu progreso</h5>
+            <span class="badge bg-primary">25%</span>
+        </div>
+        <div class="progress">
+            <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+        </div>
+    </div>
+
+    <!-- Welcome Section -->
+    <div class="content-area mb-4" id="welcome-section">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <h1 class="display-4 fw-bold text-primary">¡Bienvenido a tu aventura de aprendizaje!</h1>
+                <p class="lead">Hola {{ username }}, estás a punto de comenzar un viaje lleno de conocimiento y diversión. ¡Elige tu materia para empezar!</p>
+                <p><i class="fas fa-info-circle text-primary"></i> Cada tema te llevará por un camino de aprendizaje paso a paso.</p>
+            </div>
+            <div class="col-md-6 text-center">
+                <img src="{{ url_for('static', filename='img/dashboard/students_learning.jpg') }}" alt="Estudiantes aprendiendo" class="img-fluid rounded">
+            </div>
+        </div>
+    </div>
+
+    <!-- Materias Section -->
+    <div class="row mb-4" id="materias-section">
+        <div class="col-12">
+            <h2 class="mb-4"><i class="fas fa-book"></i> Materias</h2>
+        </div>
+        
+        {% for materia in materias %}
+        <div class="col-lg-4 col-md-6">
+            <div class="materia-card">
+                <div class="card-body">
+                    <div class="card-icon">
+                        <i class="fas fa-language"></i>
+                    </div>
+                    <h5 class="materia-title">{{ materia.nombre }}</h5>
+                    <p class="materia-description">{{ materia.descripcion }}</p>
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="flex-grow-1 me-2">
+                            <div class="progress">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 25%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                            </div>
+                        </div>
+                        <span class="text-muted small">25%</span>
+                    </div>
+                    <a href="{{ url_for('temas', id_materia=materia.id) }}" class="btn btn-primary w-100">
+                        <i class="fas fa-play-circle me-1"></i> Comenzar
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i> No tienes materias asignadas aún. Contacta a tu profesor.
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Character Guide -->
+    <div class="character-guide" id="character-guide">
+        <img src="{{ url_for('static', filename='img/dashboard/genius_character.png') }}" alt="Personaje guía" class="img-fluid">
+    </div>
+    <div class="character-speech-bubble" id="character-speech">
+        <p>¡Hola {{ username }}! Soy Genius, tu guía de aprendizaje. ¿Necesitas ayuda?</p>
+        <button class="btn btn-sm btn-primary">Mostrar consejos</button>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Show character guide on hover
+        const character = document.getElementById('character-guide');
+        const speech = document.getElementById('character-speech');
+        
+        character.addEventListener('mouseenter', function() {
+            speech.style.display = 'block';
+        });
+        
+        character.addEventListener('mouseleave', function() {
+            speech.style.display = 'none';
+        });
+    });
+</script>
 {% endblock %}
