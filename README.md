@@ -88,6 +88,14 @@ This template uses a simple JSON file (`users.json`) to store user information f
     flask db upgrade
     ```
 
+6. Seeders Database: Run migrations to apply changes to the database.
+
+    ```bash
+    flask db revision -m "Create <Name table> table"
+    flask db upgrade
+    flask db downgrade
+    ``
+
 ### Secure Database Operations:
 
 - **Use SQLAlchemy ORM**: Leverage SQLAlchemy ORM to perform secure database operations and prevent SQL injection.
