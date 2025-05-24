@@ -1,6 +1,5 @@
 from database.Materias.Materia import Materia
 from database.Materias.UsuarioMateria import UsuarioMateria
-from database.Usuarios.Rol import Rol
 from database.Usuarios.Usuario import Usuario
 from src.db_connection import db
 
@@ -13,7 +12,7 @@ class SubjectsService:
                 Materia.nombre,
                 Materia.descripcion,
             )
-            .filter(Rol.id == subject_id)
+            .filter(Materia.id == subject_id)
             .first()
         )
         if subject_by_id is None:
