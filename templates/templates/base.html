@@ -57,45 +57,6 @@
                                 </ul>
                             </li>
                         {% endfor %}
-                        <li class="nav-item dropdown">
-                            <button class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown"
-                                aria-expanded="false">
-                                Explicación del proyecto
-                            </button>
-                            <ul class="dropdown-menu">
-                                <li>
-                                    <a class="dropdown-item" href="{{ url_for('business_understanding') }}">
-                                        Entendimiento del negocio
-                                    </a>
-                                </li>
-                                <li>
-                                    <a class="dropdown-item" href="{{ url_for('data_engineering') }}">
-                                        Ingenieria de datos
-                                    </a>
-                                </li>
-
-                                <li>
-                                    <a class="dropdown-item" href="{{ url_for('model_engineering') }}">
-                                        Ingenieria del modelo
-                                    </a>
-                                </li>
-
-                                <li>
-                                    <a class="dropdown-item" href="{{ url_for('model_evaluation') }}">
-                                        Evaluacion del modelo
-                                    </a>
-                                </li>
-
-                                <li>
-                                    <a class="dropdown-item" href="{{ url_for('model_deployment') }}">
-                                        Despliegue del modelo
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link disabled" aria-disabled="true">Disabled</a>
-                        </li>
                     </ul>
                     <form class="d-flex" method="POST" action="{{ url_for('logout') }}">
                         <button type="submit" class="btn btn-link btn-logout">

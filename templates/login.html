@@ -142,6 +142,16 @@
                     />
                 </div>
 
+                <div data-mdb-input-init class="form-outline mb-4">
+                    <label for="role_register">Rol</label>
+                    <select name="role_register" id="role_register" class="form-select" required>
+                        <option value="">Seleccione un rol</option>
+                        {% for rol in roles %}
+                            <option value="{{ rol.id }}">{{ rol.rol_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
                 <button type="submit" class="btn btn-primary btn-block mb-3" id="register_btn">
                     Registrarse
                 </button>
