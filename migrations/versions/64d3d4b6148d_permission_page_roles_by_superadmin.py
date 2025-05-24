@@ -1,7 +1,7 @@
 """Permission page roles by superadmin
 
 Revision ID: 64d3d4b6148d
-Revises: c84a78bf30cd
+Revises: 5fa7938236e9
 Create Date: 2025-05-21 15:48:04.654182
 
 """
@@ -11,7 +11,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = '64d3d4b6148d'
-down_revision = 'c84a78bf30cd'
+down_revision = '5fa7938236e9'
 branch_labels = None
 depends_on = None
 

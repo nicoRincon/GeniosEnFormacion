@@ -14,7 +14,8 @@ class User:
         confirm_password: str = '',
         name: str = '',
         last_name: str = '',
-        email: str = ''
+        email: str = '',
+        role: int = 1,
     ):
         self.username = username
         self.name = name
@@ -22,6 +23,7 @@ class User:
         self.email = email
         self.password = password
         self.confirm_password = confirm_password
+        self.role = role
 
     def __repr__(self):
         return f"User({self.username}, {self.password})"
@@ -72,7 +74,7 @@ class User:
             user.nombre_usuario = self.username
             user.correo = self.email
             user.clave = hashed_password
-            user.id_rol = '1'
+            user.id_rol = self.role
             db.session.add(user)
             db.session.commit()
         else:

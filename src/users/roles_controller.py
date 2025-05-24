@@ -1,5 +1,3 @@
-
-
 from src.db_connection import app
 from flask import redirect, render_template, url_for, request, session
 from src.users.roles_service import Roles

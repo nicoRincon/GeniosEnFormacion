@@ -1,6 +1,7 @@
 from typing import List
 from flask import session
 from database.Paginas.RolPagina import RolPagina
+from database.Usuarios.Rol import Rol
 from database.Usuarios.Usuario import Usuario
 from database.Paginas.Pagina import Pagina
 
@@ -15,8 +16,9 @@ class PagesByUsers:
                 Pagina.id_tipo_pagina,
                 Pagina.id_pagina_padre,
             )
-            .join(RolPagina.pagina)
-            .join(Usuario.rol)
+            .join(RolPagina, Pagina.id == RolPagina.id_pagina)
+            .join(Rol, Rol.id == RolPagina.id_rol)
+            .join(Usuario, Usuario.id_rol == Rol.id)
             .filter(Usuario.id == user_id)
             .order_by(Pagina.id)
             .all()
