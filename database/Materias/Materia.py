@@ -12,4 +12,4 @@ class Materia(db.Model):
     fecha_actualizacion = db.Column(db.DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
 
     temas = db.relationship('Tema', back_populates='materia')
-    usuarioMateria = db.relationship('UsuarioMateria', back_populates='materias')
+    usuario_materia = db.relationship('UsuarioMateria', back_populates='materias')

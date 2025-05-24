@@ -13,3 +13,4 @@ class Tema(db.Model):
     fecha_actualizacion = db.Column(db.DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
 
     materia = db.relationship('Materia', back_populates='temas')
+    contenidos = db.relationship('Contenido', back_populates='tema')

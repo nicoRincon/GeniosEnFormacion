@@ -11,5 +11,5 @@ class UsuarioMateria(db.Model):
     fecha_creacion = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     fecha_actualizacion = db.Column(db.DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
 
-    usuarios = db.relationship('Usuario', back_populates='usuarioMateria')
-    materias = db.relationship('Materia', back_populates='usuarioMateria')
+    usuarios = db.relationship('Usuario', back_populates='usuario_materia')
+    materias = db.relationship('Materia', back_populates='usuario_materia')
