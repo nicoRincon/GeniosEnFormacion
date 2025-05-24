@@ -1,3 +1,4 @@
+from datetime import timedelta
 from flask import redirect, render_template, url_for, request, session
 from src.pages.pages_by_users_service import PagesByUsers
 from src.login.login import User
@@ -5,6 +6,7 @@ from src.db_connection import app
 
 import src.users.roles_controller
 import src.content_management.subjects.subject_controller
+import src.content_management.subjects_per_user.subjects_per_users_controller
 
 
 @app.route("/dashboard", methods=["POST", "GET"])
@@ -71,7 +73,7 @@ def register():
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
-    User(session['username'], '').logout()
+    User(session.get('username', None), '').logout()
     return redirect(url_for('login'))
 
 @app.route('/business_understanding', methods=['GET'])
@@ -101,3 +103,8 @@ def inject_pages_by_users():
         "pages_by_users": session.get("pages_by_users", []),
         "username": session.get("username", None),
     }
+
+@app.before_request
+def make_session_permanent():
+    session.permanent = True
+    app.permanent_session_lifetime = timedelta(minutes=5)
