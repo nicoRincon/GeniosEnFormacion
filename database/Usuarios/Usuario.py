@@ -15,3 +15,4 @@ class Usuario(db.Model):
     fecha_actualizacion = db.Column(db.DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
 
     rol = db.relationship('Rol', back_populates='usuarios')
+    usuarioMateria = db.relationship('UsuarioMateria', back_populates='usuarios')

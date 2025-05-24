@@ -10,3 +10,5 @@ class UsuarioMateria(db.Model):
     id_materia = db.Column(db.Integer, db.ForeignKey('materias.id'), nullable=False)
     fecha_creacion = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     fecha_actualizacion = db.Column(db.DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
+
+    usuarios = db.relationship('Usuario', back_populates='usuarioMateria')

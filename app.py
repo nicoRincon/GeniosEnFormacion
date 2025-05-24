@@ -4,6 +4,7 @@ from src.login.login import User
 from src.db_connection import app
 
 import src.users.roles_controller
+import src.content_management.subjects.subject_controller
 
 
 @app.route("/dashboard", methods=["POST", "GET"])
