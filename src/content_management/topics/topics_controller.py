@@ -1,101 +1,107 @@
-from database.Materias.Materia import Materia
+from database.Materias.Tema import Tema
 from src.db_connection import app
 from flask import redirect, render_template, url_for, request, session
-from src.content_management.subjects.subject_service import SubjectsService
+from src.content_management.topics.topics_service import TopicsService
 from flask import jsonify
 
-@app.route("/subjects", methods=["POST"])
-def create_subject():
+@app.route("/topics", methods=["POST"])
+def create_topic():
     if 'username' not in session:
         return redirect(url_for('login'))
 
     error = None
     message = None
     if request.method == 'POST':
-        subject_name = request.form['subject_name']
-        subject_description = request.form['subject_description']
+        topic_name = request.form['topic_name']
+        topic_description = request.form['topic_description']
+        subject_id = request.form['subject_id']
         try:
-            message = SubjectsService().create_subject(subject_name, subject_description)
+            message = TopicsService().create_topic(
+                subject_id,
+                topic_name,
+                topic_description
+            ).get('message', None)
         except ValueError as e:
             error = str(e.__str__())
 
-    return redirect(url_for('subjects', error=error, message=message))
+    return redirect(url_for('topics', error=error, message=message))
 
-@app.route("/subjects", methods=["GET"])
-def subjects():
+@app.route("/topics", methods=["GET"])
+def topics():
     if 'username' not in session:
         return redirect(url_for('login'))
 
     message = request.args.get('message', None)
     error = request.args.get('error', None)
-    subjects_to_show = []
+    topics_to_show = []
     try:
-        all_subjects = SubjectsService().get_all_subjects()
-        for subject in all_subjects:
-            subjects_to_show.append({
-                'id': subject.id,
-                'subject_name': subject.nombre,
-                'description': subject.descripcion
+        all_topics = TopicsService().get_all_topics()
+        for topic in all_topics:
+            topics_to_show.append({
+                'id': topic.id,
+                'subject_name': topic.nombre,
+                'description': topic.descripcion
             })
     except ValueError as e:
         error = str(e.__str__())
-        all_subjects = []
 
     return render_template(
-        'content_management/subjects.html',
-        subjects=subjects_to_show,
+        'content_management/topics.html',
+        subjects=topics_to_show,
         error=error,
         message=message
     )
 
-@app.route("/subjects/<int:subject_id>", methods=["GET", "POST"])
-def subject_by_id(subject_id):
+@app.route("/topics/<int:topic_id>", methods=["GET", "POST"])
+def topic_by_id(topic_id):
     if 'username' not in session:
         return redirect(url_for('login'))
 
-    subject: Materia|None = None
+    topic: Tema|None = None
 
     method = request.form.get('_method', 'GET')
     if method == 'PATCH':
-        return edit_subject(subject_id)
+        return edit_topic(topic_id)
     elif method == 'DELETE':
-        return delete_subject(subject_id)
+        return delete_topic(topic_id)
 
     if request.method == 'GET' or method == 'GET':
-        subject = SubjectsService().get_subject_by_id(subject_id)
+        topic = TopicsService().get_topic_by_id(topic_id)
 
     return jsonify({
-        'id': subject.id,
-        'subject_name': subject.nombre,
-        'subject_description': subject.descripcion
-    }) if subject else None
+        'id': topic.id,
+        'subject_id': topic.id_materia,
+        'topic_name': topic.nombre,
+        'topic_description': topic.descripcion
+    }) if topic else None
 
-def edit_subject(subject_id: int):
+def edit_topic(topic_id: int):
     if 'username' not in session:
         return redirect(url_for('login'))
 
     error = None
     message = None
     try:
-        subject_name = request.form['edit_subject_name']
-        subject_description = request.form['edit_subject_description']
-        message = SubjectsService().update_subject(
-            subject_id, subject_name, subject_description
+        topic_name = request.form['edit_topic_name']
+        topic_description = request.form['edit_topic_description']
+        subject_id = request.form['edit_subject_id']
+        message = TopicsService().update_topic(
+            topic_id, subject_id, topic_name, topic_description
         ).get('message', None)
     except ValueError as e:
         error = str(e.__str__())
 
-    return redirect(url_for('subjects', error=error, message=message))
+    return redirect(url_for('topics', error=error, message=message))
 
-def delete_subject(subject_id: int):
+def delete_topic(topic_id: int):
     if 'username' not in session:
         return redirect(url_for('login'))
 
     error = None
     message = None
     try:
-        message = SubjectsService().delete_subject(subject_id).get('message', None)
+        message = TopicsService().delete_topic(topic_id).get('message', None)
     except ValueError as e:
         error = str(e.__str__())
 
-    return redirect(url_for('subjects', error=error, message=message))
+    return redirect(url_for('topics', error=error, message=message))
