@@ -93,7 +93,7 @@ def activity_by_id(activity_id):
         'id': activity.id,
         'content_id': activity.id_contenido,
         'activity_type_id': activity.id_tipo_actividad,
-        'content': activity.contenido,
+        'questions_json': activity.contenido,
     }) if activity else None
 
 def edit_activity(activity_id: int):
