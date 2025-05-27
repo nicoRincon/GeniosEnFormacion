@@ -1,4 +1,4 @@
-from flask import redirect, render_template, url_for, request, session, jsonify
+from flask import redirect, render_template, url_for, request, session
 from src.pages.pages_by_users_service import PagesByUsers
 from src.login.login import User
 from src.db_connection import app

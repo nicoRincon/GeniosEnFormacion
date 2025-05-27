@@ -11,3 +11,4 @@ flask-sqlalchemy
 openpyxl
 setuptools
 flask_seeder
+seaborn
