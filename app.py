@@ -7,6 +7,7 @@ import src.users.roles_controller
 import src.content_management.subjects.subject_controller
 import src.content_management.subjects_per_user.subjects_per_users_controller
 import src.content_management.topics.topics_controller
+import src.content_management.contents.contents_controller
 
 
 @app.route("/dashboard", methods=["POST", "GET"])
