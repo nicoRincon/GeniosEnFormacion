@@ -11,3 +11,6 @@ class Actividad(db.Model):
     contenido = db.Column(db.Text, nullable=False)
     fecha_creacion = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     fecha_actualizacion = db.Column(db.DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
+
+    contenido_relacionado = db.relationship('Contenido', backref='actividades')
+    tipo_actividad_relacionada = db.relationship('TipoActividad', backref='actividades')
