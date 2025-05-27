@@ -38,6 +38,14 @@ def contents():
     error = request.args.get('error', None)
     contents_to_show = []
     try:
+        topics = TopicsService().get_all_topics()
+        selection_topics = [
+            {
+                'id': topic.id,
+                'name': topic.nombre,
+            } for topic in topics
+        ]
+
         all_contents = ContentsService().get_all_contents()
         for content in all_contents:
             contents_to_show.append({
@@ -47,14 +55,6 @@ def contents():
                 'grade_level': content.nivel_grado,
                 'topic': content.nombre_tema,
             })
-            
-        topics = TopicsService().get_all_topics()
-        selection_topics = [
-            {
-                'id': topic.id,
-                'name': topic.nombre,
-            } for topic in topics
-        ]
     except ValueError as e:
         error = str(e.__str__())
 

@@ -36,6 +36,14 @@ def topics():
     error = request.args.get('error', None)
     topics_to_show = []
     try:
+        subjects = SubjectsService().get_all_subjects()
+        selection_subjects = [
+            {
+                'id': subject.id,
+                'name': subject.nombre,
+            } for subject in subjects
+        ]
+
         all_topics = TopicsService().get_all_topics()
         for topic in all_topics:
             topics_to_show.append({
@@ -44,14 +52,6 @@ def topics():
                 'topic_name': topic.nombre,
                 'description': topic.descripcion
             })
-
-        subjects = SubjectsService().get_all_subjects()
-        selection_subjects = [
-            {
-                'id': subject.id,
-                'name': subject.nombre,
-            } for subject in subjects
-        ]
     except ValueError as e:
         error = str(e.__str__())
 

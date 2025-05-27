@@ -1,6 +1,7 @@
 {% extends "templates/base.html" %}
 {% include "content_management/activities_modal_create.html" %}
 {% include "content_management/activities_modal_update.html" %}
+{% include "content_management/activities_modal_show_questions.html" %}
 
 {% block title %}Actividades{% endblock %}
 
@@ -35,7 +36,12 @@
             <tr>
                 <td>{{ activity.content_name }}</td>
                 <td>{{ activity.activity_type }}</td>
-                <td>{{ activity.content }}</td>
+                <td>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#activity-modal-show-questions" data-id="{{ activity.id }}">
+                        Ver contenido
+                    </button>
+                </td>
                 <td class="d-flex justify-content-end">
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                         data-bs-target="#activity-modal-update" data-id="{{ activity.id }}">

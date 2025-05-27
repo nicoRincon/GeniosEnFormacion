@@ -36,16 +36,9 @@ def activities():
     message = request.args.get('message', None)
     error = request.args.get('error', None)
     activities_to_show = []
+    selection_activity_types = []
+    selection_contents = []
     try:
-        all_activities = ActivitiesService().get_all_activities()
-        for activity in all_activities:
-            activities_to_show.append({
-                'id': activity.id,
-                'content_name': activity.nombre_contenido,
-                'activity_type': activity.tipo_actividad,
-                'content': activity.contenido,
-            })
-
         activity_types = ActivityTypesService().get_all_activity_types()
         contents = ContentsService().get_all_contents()
 
@@ -61,8 +54,18 @@ def activities():
                 'name': content.titulo,
             } for content in contents
         ]
+
+        all_activities = ActivitiesService().get_all_activities()
+        for activity in all_activities:
+            activities_to_show.append({
+                'id': activity.id,
+                'content_name': activity.nombre_contenido,
+                'activity_type': activity.tipo_actividad,
+                'content': activity.contenido,
+            })
     except ValueError as e:
         error = str(e.__str__())
+
 
     return render_template(
         'content_management/activities.html',
