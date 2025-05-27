@@ -1,39 +1,82 @@
 from sklearn.neighbors import KNeighborsClassifier
-import numpy as np
 import random
-import unicodedata
+from database.Materias.Contenido import Contenido
+from database.Materias.Tema import Tema
+from database.Materias.Materia import Materia
+import joblib
+import os
 
 class FeedAIDataSpanish:
-    def __init__(self):
-        self.letters = []
-        self.activities = []
-        self.knn = KNeighborsClassifier(n_neighbors=1)
+    def generate_knn_based_questions(self, content_id, model_path='static/data_ai/models/knn_model.pkl'):
+        """
+        Usa el modelo KNN para predecir la actividad para un contenido dado y genera preguntas/respuestas en formato JSON.
+        Las preguntas y respuestas se generan de forma variada.
+        """
+        # Load the KNN model
+        if not os.path.exists(model_path):
+            raise FileNotFoundError(f"Modelo no encontrado en {model_path}")
+        model: KNeighborsClassifier = joblib.load(model_path)
 
-    def get_activity(self):
-        for letter in range(65, 91):
-            self.letters.append([letter])
-            self.activities.append(f"Palabras con {chr(letter)}")
+        content: Contenido = Contenido.query.filter_by(id=content_id).first()
+        if not content:
+            return []
 
-        self.letters = np.array(self.letters)
+        topics: Tema = Tema.query.filter_by(id=content.id_tema).first()
+        subject: Materia = Materia.query.filter_by(id=topics.id_materia).first() if topics else None
 
-        self.knn.fit(self.letters, self.activities)
+        subject_name = subject.nombre if subject else "Materia"
+        topic_name = topics.nombre if topics else "Tema"
+        content_name = content.titulo
 
-        new_letter = np.array([[random.randint(65, 91)]])
-        return self.knn.predict(new_letter)
+        # Generate unique codes for subject, topic, and content
+        subject_code = abs(hash(subject_name)) % 1000 if subject else 0
+        topic_code = abs(hash(topic_name)) % 1000 if topics else 0
+        content_code = abs(hash(content_name)) % 1000
 
-    def receive_and_process_activity(self):
-        words_to_validate = np.array(["Árbol", "Barco", "Casa", "Dado", 'Saco'])
-        words_to_validate = np.array([self.normalize_letter(word) for word in words_to_validate])
-        first_letters = np.array([word[0] for word in words_to_validate])
-        letters_to_ascii = np.array([ord(letter) for letter in first_letters])
-        if letters_to_ascii.size > 0:
-            ascii_codes_2d = letters_to_ascii.reshape(-1, 1)
-            result_suggested_activity = self.knn.predict(ascii_codes_2d)
-            for rsa in result_suggested_activity:
-                print(f"La palabra ingresada pertenece a la actividad: {rsa}")
-        else:
-            print("La letra ingresada no está en los datos de la IA.")
+        x_pred = [[subject_code, topic_code, content_code, content_id]]
+        y_pred = model.predict(x_pred)
+        predict_activity = str(y_pred[0])
 
-    def normalize_letter(self, letter: str):
-        # Quita acentos y convierte a mayúscula
-        return unicodedata.normalize('NFKD', letter).encode('ASCII', 'ignore').decode('ASCII').upper()
+        # Options and questions
+        question_titles = [
+            f"¿Cuál de las siguientes opciones está relacionada con el tema '{topic_name}'?",
+            f"Selecciona el concepto que mejor describe el contenido '{content_name}'.",
+            f"¿Qué opción corresponde a la materia '{subject_name}'?",
+            f"¿Cuál es la respuesta correcta para el contenido '{content_name}'?"
+        ]
+        general_options = [
+            [subject_name, topic_name, content_name],
+            [content_name, "Concepto erróneo", "Ninguna de las anteriores"],
+            [topic_name, "Otra materia", subject_name],
+            [predict_activity, "Otra opción", "No corresponde"]
+        ]
+        correct_answers = [
+            [topic_name],
+            [content_name],
+            [subject_name],
+            [predict_activity]
+        ]
+
+        questions = []
+        for _ in range(3):
+            idx = random.randint(0, len(question_titles)-1)
+            questions.append({
+                "title": question_titles[idx],
+                "options": general_options[idx],
+                "correct_options": correct_answers[idx],
+                "is_multiple_selection": False,
+                "can_be_open_ended": False,
+                "open_ended_response": ""
+            })
+
+        # Pregunta abierta personalizada
+        questions.append({
+            "title": f"Explica brevemente el tema '{topic_name}' en tus propias palabras.",
+            "options": [],
+            "correct_options": [],
+            "is_multiple_selection": False,
+            "can_be_open_ended": True,
+            "open_ended_response": f"El tema '{topic_name}' trata sobre aspectos importantes de la materia '{subject_name}'."
+        })
+
+        return questions
