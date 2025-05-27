@@ -1,6 +1,6 @@
 from src.db_connection import app
 from flask import redirect, render_template, url_for, request, session
-from src.users.roles_service import Roles
+from src.users.roles_service import RolesService
 from flask import jsonify
 
 @app.route("/roles", methods=["POST"])
@@ -12,7 +12,7 @@ def create_role():
     if request.method == 'POST':
         role_name = request.form['role_name']
         try:
-            message = Roles().create_role(role_name)
+            message = RolesService().create_role(role_name)
         except ValueError as e:
             error = str(e.__str__())
 
@@ -25,7 +25,7 @@ def roles():
 
     message = request.args.get('message', None)
     error = request.args.get('error', None)
-    all_roles = Roles().get_all_roles()
+    all_roles = RolesService().get_all_roles()
 
     return render_template('users/roles.html', all_roles=all_roles, error=error, message=message)
 
@@ -43,7 +43,7 @@ def role_by_id(role_id):
         return delete_role(role_id)
 
     if request.method == 'GET' or method == 'GET':
-        role = Roles().get_role_by_id(role_id)
+        role = RolesService().get_role_by_id(role_id)
 
     return jsonify({ 'id': role.id, 'role_name': role.nombre_rol }) if role else None
 
@@ -55,7 +55,7 @@ def edit_role(role_id: int):
     message = None
     try:
         role_name = request.form['edit_rol_name']
-        message = Roles().update_role(role_id, role_name).get('message', None)
+        message = RolesService().update_role(role_id, role_name).get('message', None)
     except ValueError as e:
         error = str(e.__str__())
 
@@ -67,7 +67,7 @@ def delete_role(role_id: int):
     error = None
     message = None
     try:
-        message = Roles().delete_role(role_id).get('message', None)
+        message = RolesService().delete_role(role_id).get('message', None)
     except ValueError as e:
         error = str(e.__str__())
 

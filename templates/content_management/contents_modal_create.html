@@ -1,0 +1,39 @@
+{% extends "templates/modal.html" %}
+
+<!-- Modal create -->
+{% block modal_data %}
+    id="content-modal-create" aria-labelledby="contentModalCreateLabel"
+{% endblock %}
+
+{% block modal_title %}
+    Crear Contenido
+{% endblock %}
+
+{% block form_action %}
+    action="{{ url_for('create_content') }}" method="post"
+{% endblock %}
+
+{% block modal_body %}
+    <div class="form-group">
+        <input type="hidden" name="_method" value="POST">
+        <label for="create-content-name">Título</label>
+        <input type="text" class="form-control" id="create-content-name" name="content_name" required>
+    </div>
+    <div class="form-group">
+        <label for="create-content-description">Descripción</label>
+        <textarea class="form-control" id="create-content-description" name="content_description" required></textarea>
+    </div>
+    <div class="form-group">
+        <label for="create-grade-level">Nivel de grado</label>
+        <input type="number" class="form-control" id="create-grade-level" name="grade_level" required>
+    </div>
+    <div class="form-group">
+        <label for="create-topic-id">Tema</label>
+        <select name="topic_id" id="create-topic-id" class="form-select" required>
+            <option value="" selected disabled>Seleccione un tema</option>
+            {% for topic in selection_topics %}
+                <option value="{{ topic.id }}">{{ topic.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+{% endblock %}

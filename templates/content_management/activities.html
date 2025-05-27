@@ -1,0 +1,62 @@
+{% extends "templates/base.html" %}
+{% include "content_management/activities_modal_create.html" %}
+{% include "content_management/activities_modal_update.html" %}
+{% include "content_management/activities_modal_show_questions.html" %}
+
+{% block title %}Actividades{% endblock %}
+
+{% block add_head %}
+    <script>
+        const BASE_EDIT_URL = "{{ url_for('activity_by_id', activity_id=0) }}";
+        const ERROR = "{{ error }}" == 'None' ? null : "{{ error }}";
+        const MESSAGE = "{{ message }}" == 'None' ? null : "{{ message }}";
+    </script>
+    <script src="{{ url_for('static', filename='js/activities.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Actividades</h1>
+    <div class="d-flex justify-content-end">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#activity-modal-create">
+            Crear nueva actividad
+        </button>
+    </div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Contenido</th>
+                <th>Tipo de actividad</th>
+                <th>Contenido</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for activity in activities %}
+            <tr>
+                <td>{{ activity.content_name }}</td>
+                <td>{{ activity.activity_type }}</td>
+                <td>
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#activity-modal-show-questions" data-id="{{ activity.id }}">
+                        Ver contenido
+                    </button>
+                </td>
+                <td class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#activity-modal-update" data-id="{{ activity.id }}">
+                        Editar
+                    </button>
+                    <form action="{{ url_for('activity_by_id', activity_id=activity.id) }}" method="post"
+                        class="py-0 my-0 mx-2"
+                    >
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

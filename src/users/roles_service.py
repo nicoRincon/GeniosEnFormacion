@@ -2,7 +2,7 @@ from database.Usuarios.Rol import Rol
 from database.Usuarios.Usuario import Usuario
 from src.db_connection import db
 
-class Roles:
+class RolesService:
     def get_role_by_id(self, role_id: int):
         role_by_id = db.session.query(Rol).filter(Rol.id == role_id).first()
         if role_by_id is None:
@@ -25,7 +25,7 @@ class Roles:
     def update_role(self, role_id: int, new_role_name: str):
         role_to_update = db.session.query(Rol).filter(Rol.id == role_id).first()
         if role_to_update is None:
-            raise ValueError(f"Role with ID {role_id} no existe.")
+            raise ValueError(f"Role con ID {role_id} no existe.")
         role_to_update.nombre_rol = new_role_name
         db.session.commit()
         return { 'message': f"Rol {role_id} actualizado." }
@@ -42,3 +42,16 @@ class Roles:
         db.session.delete(role_to_delete)
         db.session.commit()
         return { 'message': f"Rol {role_id} eliminado." }
+
+    def get_role_by_user_id(self, user_id: int) -> Rol:
+        role = (
+            Rol.query
+            .join(Rol.usuarios)
+            .filter(Usuario.id == user_id)
+            .first()
+        )
+
+        if role is None:
+            raise ValueError(f"Rol para el usuario con ID {user_id} no encontrado.")
+
+        return role

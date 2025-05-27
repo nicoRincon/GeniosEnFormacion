@@ -1,9 +1,15 @@
-from flask import redirect, render_template, url_for, request, session
+from flask import redirect, render_template, url_for, request, session, jsonify
 from src.pages.pages_by_users_service import PagesByUsers
 from src.login.login import User
 from src.db_connection import app
 
 import src.users.roles_controller
+import src.content_management.subjects.subject_controller
+import src.content_management.subjects_per_user.subjects_per_users_controller as subjects_per_users_controller
+import src.content_management.topics.topics_controller
+import src.content_management.contents.contents_controller
+import src.content_management.activities.activities_controller
+import src.content_management.activity_types.activity_types_controller
 
 
 @app.route("/dashboard", methods=["POST", "GET"])
@@ -15,6 +21,7 @@ def dashboard():
 
     try:
         pages_by_users = PagesByUsers().get_page_by_user_id(session['user_id'])
+        subjects_per_user = subjects_per_users_controller.SubjectsPerUsersService().get_all_subjects_per_user()
     except ValueError as e:
         error = str(e.__str__())
         pages_by_users = []
@@ -23,7 +30,8 @@ def dashboard():
 
     return render_template(
         'dashboard.html',
-        error=error
+        error=error,
+        subjects_per_user=subjects_per_user,
     )
 
 
@@ -70,7 +78,7 @@ def register():
 
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
-    User(session['username'], '').logout()
+    User(session.get('username', None), '').logout()
     return redirect(url_for('login'))
 
 @app.route('/business_understanding', methods=['GET'])
@@ -92,7 +100,6 @@ def model_evaluation():
 @app.route('/model_deployment', methods=['GET'])
 def model_deployment():
     return render_template('project_explanation/model_deployment.html', username=session['username'])
-
 
 @app.context_processor
 def inject_pages_by_users():

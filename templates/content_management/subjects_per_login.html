@@ -1,0 +1,162 @@
+{% extends "templates/base.html" %}
+
+{% block title %}Asignación de materias{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Asignación de materias por usuario</h1>
+    <table class="table table-striped" id="subjects-table">
+        <thead>
+            <tr>
+                <th>Usuario</th>
+                <th>Materia</th>
+                <th class="text-end"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Fila para agregar nueva asignación -->
+            <tr id="add-row">
+                <td>{{ username }}</td>
+                <td>
+                    <select id="subject-select" class="form-select" required>
+                        <option value="" selected disabled>Seleccione una materia</option>
+                        {% for subject in selection_subjects %}
+                            <option value="{{ subject.id }}"
+                                {% for assignment in assignments %}
+                                    {% if assignment.subject_id == subject.id %}
+                                        disabled
+                                    {% endif %}
+                                {% endfor %}
+                            >{{ subject.name }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+                <td class="d-flex justify-content-end">
+                    <button id="add-subject-btn" class="btn btn-success" type="button">
+                        <i class="fa fa-plus"></i> Agregar
+                    </button>
+                </td>
+            </tr>
+            <!-- Asignaciones existentes -->
+            {% for assignment in assignments %}
+            <tr data-subject-id="{{ assignment.subject_id }}" data-assignment-id="{{ assignment.assignment_id }}">
+                <td>{{ assignment.username }}</td>
+                <td>{{ assignment.subject_name }}</td>
+                <td class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-danger btn-delete" data-id="{{ assignment.assignment_id }}">Eliminar</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+<script>
+function disableAssignedSubjects() {
+    const assignedIds = Array.from(document.querySelectorAll('#subjects-table tr[data-subject-id]'))
+        .map(row => row.getAttribute('data-subject-id'));
+    const select = document.getElementById('subject-select');
+    Array.from(select.options).forEach(opt => {
+        if (assignedIds.includes(opt.value)) {
+            opt.disabled = true;
+        } else if (opt.value) {
+            opt.disabled = false;
+        }
+    });
+}
+
+$('#add-subject-btn').on('click', function() {
+    const select = document.getElementById('subject-select');
+    const subjectId = select.value;
+    const subjectText = select.options[select.selectedIndex]?.text;
+    if (!subjectId) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Selección requerida',
+            text: 'Por favor, seleccione una materia antes de continuar.'
+        });
+        return;
+    }
+    if (document.querySelector(`#subjects-table tr[data-subject-id="${subjectId}"]`)) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Materia ya asignada',
+            text: 'La materia ya está asignada a este usuario.'
+        });
+        return;
+    }
+
+    const url = '{{ url_for("set_subjects_per_login", subject_id=0) }}';
+    $.ajax({
+        url: url.replace('0', subjectId),
+        type: 'POST',
+        contentType: 'application/json',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token() if csrf_token is defined }}'
+        },
+        data: JSON.stringify({ subject_id: subjectId }),
+        success: function(data) {
+            if (!data.error && data.assignment_id) {
+                const tbody = document.querySelector('#subjects-table tbody');
+                const newRow = document.createElement('tr');
+                newRow.setAttribute('data-subject-id', subjectId);
+                newRow.setAttribute('data-assignment-id', data.assignment_id);
+                newRow.innerHTML = `
+                    <td>{{ username }}</td>
+                    <td>${subjectText}</td>
+                    <td class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-danger btn-delete" data-id="${data.assignment_id}">Eliminar</button>
+                    </td>
+                `;
+                tbody.appendChild(newRow);
+                select.selectedIndex = 0;
+                disableAssignedSubjects();
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error al asignar materia',
+                    text: data.error || 'Por favor, inténtelo de nuevo más tarde.'
+                });
+            }
+        },
+        error: function(error) {
+            console.error('Error al asignar materia:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Ocurrió un error al intentar asignar la materia. ' + error.responseJSON?.error || 'Por favor, inténtelo de nuevo más tarde.'
+            });
+        }
+    });
+});
+
+
+$('#subjects-table').on('click', '.btn-delete', function() {
+    const row = $(this).closest('tr');
+    const assignmentId = $(this).data('id');
+    const url = '{{ url_for("delete_assignment_by_id", assignment_id=0) }}';
+    $.ajax({
+        url: url.replace('0', assignmentId),
+        type: 'DELETE',
+        contentType: 'application/json',
+        headers: {
+            'X-CSRFToken': '{{ csrf_token() if csrf_token is defined }}'
+        },
+        data: JSON.stringify({ assignment_id: assignmentId }),
+        success: function(data) {
+            if (!data.error) {
+                row.remove();
+                disableAssignedSubjects();
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error al eliminar',
+                    text: data.error || 'No se pudo eliminar la asignación.'
+                });
+            }
+        }
+    });
+});
+
+disableAssignedSubjects();
+</script>
+{% endblock %}

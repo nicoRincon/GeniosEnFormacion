@@ -12,3 +12,5 @@ class Contenido(db.Model):
     nivel_grado = db.Column(db.Numeric)
     fecha_creacion = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     fecha_actualizacion = db.Column(db.DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
+
+    tema = db.relationship('Tema', back_populates='contenidos')

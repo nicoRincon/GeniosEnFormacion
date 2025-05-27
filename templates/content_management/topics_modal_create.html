@@ -1,0 +1,35 @@
+{% extends "templates/modal.html" %}
+
+<!-- Modal create -->
+{% block modal_data %}
+    id="topic-modal-create" aria-labelledby="topicModalCreateLabel"
+{% endblock %}
+
+{% block modal_title %}
+    Crear Tema
+{% endblock %}
+
+{% block form_action %}
+    action="{{ url_for('create_topic') }}" method="post"
+{% endblock %}
+
+{% block modal_body %}
+    <div class="form-group">
+        <input type="hidden" name="_method" value="POST">
+        <label for="create-topic-name">Nombre del tema</label>
+        <input type="text" class="form-control" id="create-topic-name" name="topic_name" required>
+    </div>
+    <div class="form-group">
+        <label for="create-topic-description">Descripción</label>
+        <textarea class="form-control" id="create-topic-description" name="topic_description" required></textarea>
+    </div>
+    <div class="form-group">
+        <label for="create-subject-id">Materia</label>
+        <select name="subject_id" id="create-subject-id" class="form-select">
+            <option value="" selected disabled>Seleccione una materia</option>
+            {% for subject in selection_subjects %}
+                <option value="{{ subject.id }}">{{ subject.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+{% endblock %}

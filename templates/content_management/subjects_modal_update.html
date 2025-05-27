@@ -1,0 +1,27 @@
+{% extends "templates/modal.html" %}
+
+<!-- Modal update -->
+{% block modal_data %}
+    id="subject-modal-update" aria-labelledby="subjectModalUpdateLabel"
+{% endblock %}
+
+{% block modal_title %}
+    Actualizar Materia
+{% endblock %}
+
+{% block form_action %}
+    id="edit-subject-form" method="post"
+{% endblock %}
+
+{% block modal_body %}
+    <input type="hidden" name="_method" value="PATCH">
+    <input type="hidden" id="edit-subject-id" name="edit_subject_id">
+    <div class="form-group">
+        <label for="edit-subject-name">Nombre de la materia</label>
+        <input type="text" class="form-control" id="edit-subject-name" name="edit_subject_name" required>
+    </div>
+    <div class="form-group">
+        <label for="edit-subject-description">Descripción</label>
+        <textarea class="form-control" id="edit-subject-description" name="edit_subject_description" required></textarea>
+    </div>
+{% endblock %}

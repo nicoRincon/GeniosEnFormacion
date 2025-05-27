@@ -1,0 +1,54 @@
+{% extends "templates/base.html" %}
+{% include "content_management/subjects_modal_create.html" %}
+{% include "content_management/subjects_modal_update.html" %}
+
+{% block title %}Materias{% endblock %}
+
+{% block add_head %}
+    <script>
+        const BASE_EDIT_URL = "{{ url_for('subject_by_id', subject_id=0) }}";
+        const ERROR = "{{ error }}" == 'None' ? null : "{{ error }}";
+        const MESSAGE = "{{ message }}" == 'None' ? null : "{{ message }}";
+    </script>
+    <script src="{{ url_for('static', filename='js/subjects.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Materias</h1>
+    <div class="d-flex justify-content-end">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#subject-modal-create">
+            Crear nueva materia
+        </button>
+    </div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for subject in subjects %}
+            <tr>
+                <td>{{ subject.subject_name }}</td>
+                <td>{{ subject.description }}</td>
+                <td class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#subject-modal-update" data-id="{{ subject.id }}">
+                        Editar
+                    </button>
+                    <form action="{{ url_for('subject_by_id', subject_id=subject.id) }}" method="post"
+                        class="py-0 my-0 mx-2"
+                    >
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

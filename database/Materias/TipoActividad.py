@@ -1,6 +1,4 @@
 from src.db_connection import db
-from datetime import datetime 
-
 
 
 class TipoActividad(db.Model):

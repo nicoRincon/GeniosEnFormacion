@@ -1,0 +1,17 @@
+{% extends "templates/modal.html" %}
+
+{% block modal_data %}
+    id="activity-modal-show-questions" aria-labelledby="activityModalShowQuestionsLabel"
+{% endblock %}
+
+{% block modal_title %}
+    Ver preguntas de Actividad
+{% endblock %}
+
+{% block form_action %}
+    action="#"
+{% endblock %}
+
+{% block modal_body %}
+    <div id="activity-questions-list" class="container mt-4"></div>
+{% endblock %}
