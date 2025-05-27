@@ -1,0 +1,26 @@
+{% extends "templates/modal.html" %}
+
+<!-- Modal create -->
+{% block modal_data %}
+    id="subject-modal-create" aria-labelledby="subjectModalCreateLabel"
+{% endblock %}
+
+{% block modal_title %}
+    Crear Materia
+{% endblock %}
+
+{% block form_action %}
+    action="{{ url_for('create_subject') }}" method="post"
+{% endblock %}
+
+{% block modal_body %}
+    <div class="form-group">
+        <input type="hidden" name="_method" value="POST">
+        <label for="create-subject-name">Nombre de la materia</label>
+        <input type="text" class="form-control" id="create-subject-name" name="subject_name" required>
+    </div>
+    <div class="form-group">
+        <label for="create-subject-description">Descripción</label>
+        <textarea class="form-control" id="create-subject-description" name="subject_description" required></textarea>
+    </div>
+{% endblock %}

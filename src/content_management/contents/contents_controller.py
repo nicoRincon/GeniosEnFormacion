@@ -1,3 +1,4 @@
+from src.content_management.topics.topics_service import TopicsService
 from database.Materias.Contenido import Contenido
 from src.db_connection import app
 from flask import redirect, render_template, url_for, request, session
@@ -26,7 +27,7 @@ def create_content():
         except ValueError as e:
             error = str(e.__str__())
 
-    return redirect(url_for('topics', error=error, message=message))
+    return redirect(url_for('contents', error=error, message=message))
 
 @app.route("/contents", methods=["GET"])
 def contents():
@@ -46,14 +47,23 @@ def contents():
                 'grade_level': content.nivel_grado,
                 'topic': content.nombre_tema,
             })
+            
+        topics = TopicsService().get_all_topics()
+        selection_topics = [
+            {
+                'id': topic.id,
+                'name': topic.nombre,
+            } for topic in topics
+        ]
     except ValueError as e:
         error = str(e.__str__())
 
     return render_template(
-        'content_management/content.html',
+        'content_management/contents.html',
         contents=contents_to_show,
         error=error,
-        message=message
+        message=message,
+        selection_topics=selection_topics
     )
 
 @app.route("/contents/<int:content_id>", methods=["GET", "POST"])

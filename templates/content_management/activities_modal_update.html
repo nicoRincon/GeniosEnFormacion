@@ -1,0 +1,41 @@
+{% extends "templates/modal.html" %}
+
+<!-- Modal update -->
+{% block modal_data %}
+    id="activity-modal-update" aria-labelledby="activityModalUpdateLabel"
+{% endblock %}
+
+{% block modal_title %}
+    Actualizar Actividad
+{% endblock %}
+
+{% block form_action %}
+    id="edit-activity-form" method="post"
+{% endblock %}
+
+{% block modal_body %}
+    <input type="hidden" name="_method" value="PATCH">
+    <input type="hidden" id="edit-activity-id" name="edit_activity_id">
+    <div class="form-group">
+        <label for="edit-content-id">Contenido</label>
+        <select name="edit_content_id" id="edit-content-id" class="form-select" required>
+            <option value="" selected disabled>Seleccione un contenido</option>
+            {% for content in contents %}
+                <option value="{{ content.id }}">{{ content.title_name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="edit-activity-type-id">Tipo de actividad</label>
+        <select name="edit_activity_type_id" id="edit-activity-type-id" class="form-select" required>
+            <option value="" selected disabled>Seleccione un tipo</option>
+            {% for type in activity_types %}
+                <option value="{{ type.id }}">{{ type.activity_type }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="edit-content">Contenido</label>
+        <textarea class="form-control" id="edit-content" name="edit_content" required></textarea>
+    </div>
+{% endblock %}

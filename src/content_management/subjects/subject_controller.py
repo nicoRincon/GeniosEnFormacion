@@ -39,7 +39,6 @@ def subjects():
             })
     except ValueError as e:
         error = str(e.__str__())
-        all_subjects = []
 
     return render_template(
         'content_management/subjects.html',

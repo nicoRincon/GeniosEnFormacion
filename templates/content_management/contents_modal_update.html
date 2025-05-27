@@ -1,0 +1,40 @@
+{% extends "templates/modal.html" %}
+
+<!-- Modal update -->
+{% block modal_data %}
+    id="content-modal-update" aria-labelledby="contentModalUpdateLabel"
+{% endblock %}
+
+{% block modal_title %}
+    Actualizar Contenido
+{% endblock %}
+
+{% block form_action %}
+    id="edit-content-form" method="post"
+{% endblock %}
+
+{% block modal_body %}
+    <input type="hidden" name="_method" value="PATCH">
+    <input type="hidden" id="edit-content-id" name="edit_content_id">
+    <div class="form-group">
+        <label for="edit-content-name">Título</label>
+        <input type="text" class="form-control" id="edit-content-name" name="edit_content_name" required>
+    </div>
+    <div class="form-group">
+        <label for="edit-content-description">Descripción</label>
+        <textarea class="form-control" id="edit-content-description" name="edit_content_description" required></textarea>
+    </div>
+    <div class="form-group">
+        <label for="edit-grade-level">Nivel de grado</label>
+        <input type="number" class="form-control" id="edit-grade-level" name="edit_grade_level" required>
+    </div>
+    <div class="form-group">
+        <label for="edit-topic-id">Tema</label>
+        <select name="edit_topic_id" id="edit-topic-id" class="form-select" required>
+            <option value="" selected disabled>Seleccione un tema</option>
+            {% for topic in selection_topics %}
+                <option value="{{ topic.id }}">{{ topic.name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+{% endblock %}

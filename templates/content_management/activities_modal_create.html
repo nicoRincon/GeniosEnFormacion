@@ -1,0 +1,40 @@
+{% extends "templates/modal.html" %}
+
+<!-- Modal create -->
+{% block modal_data %}
+    id="activity-modal-create" aria-labelledby="activityModalCreateLabel"
+{% endblock %}
+
+{% block modal_title %}
+    Crear Actividad
+{% endblock %}
+
+{% block form_action %}
+    action="{{ url_for('create_activities') }}" method="post"
+{% endblock %}
+
+{% block modal_body %}
+    <div class="form-group">
+        <input type="hidden" name="_method" value="POST">
+        <label for="create-content-id">Contenido</label>
+        <select name="content_id" id="create-content-id" class="form-select" required>
+            <option value="" selected disabled>Seleccione un contenido</option>
+            {% for content in contents %}
+                <option value="{{ content.id }}">{{ content.title_name }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="create-activity-type-id">Tipo de actividad</label>
+        <select name="activity_type_id" id="create-activity-type-id" class="form-select" required>
+            <option value="" selected disabled>Seleccione un tipo</option>
+            {% for type in activity_types %}
+                <option value="{{ type.id }}">{{ type.activity_type }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="create-content">Contenido</label>
+        <textarea class="form-control" id="create-content" name="content" required></textarea>
+    </div>
+{% endblock %}

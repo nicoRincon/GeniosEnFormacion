@@ -1,0 +1,58 @@
+{% extends "templates/base.html" %}
+{% include "content_management/contents_modal_create.html" %}
+{% include "content_management/contents_modal_update.html" %}
+
+{% block title %}Contenidos{% endblock %}
+
+{% block add_head %}
+    <script>
+        const BASE_EDIT_URL = "{{ url_for('content_by_id', content_id=0) }}";
+        const ERROR = "{{ error }}" == 'None' ? null : "{{ error }}";
+        const MESSAGE = "{{ message }}" == 'None' ? null : "{{ message }}";
+    </script>
+    <script src="{{ url_for('static', filename='js/contents.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Contenidos</h1>
+    <div class="d-flex justify-content-end">
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#content-modal-create">
+            Crear nuevo contenido
+        </button>
+    </div>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Título</th>
+                <th>Descripción</th>
+                <th>Nivel de grado</th>
+                <th>Tema</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for content in contents %}
+            <tr>
+                <td>{{ content.title_name }}</td>
+                <td>{{ content.description }}</td>
+                <td>{{ content.grade_level }}</td>
+                <td>{{ content.topic }}</td>
+                <td class="d-flex justify-content-end">
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                        data-bs-target="#content-modal-update" data-id="{{ content.id }}">
+                        Editar
+                    </button>
+                    <form action="{{ url_for('content_by_id', content_id=content.id) }}" method="post"
+                        class="py-0 my-0 mx-2"
+                    >
+                        <input type="hidden" name="_method" value="DELETE">
+                        <button type="submit" class="btn btn-danger">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

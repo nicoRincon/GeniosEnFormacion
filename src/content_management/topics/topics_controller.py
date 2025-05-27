@@ -1,3 +1,4 @@
+from src.content_management.subjects.subject_service import SubjectsService
 from database.Materias.Tema import Tema
 from src.db_connection import app
 from flask import redirect, render_template, url_for, request, session
@@ -43,6 +44,14 @@ def topics():
                 'topic_name': topic.nombre,
                 'description': topic.descripcion
             })
+
+        subjects = SubjectsService().get_all_subjects()
+        selection_subjects = [
+            {
+                'id': subject.id,
+                'name': subject.nombre,
+            } for subject in subjects
+        ]
     except ValueError as e:
         error = str(e.__str__())
 
@@ -50,7 +59,8 @@ def topics():
         'content_management/topics.html',
         topics=topics_to_show,
         error=error,
-        message=message
+        message=message,
+        selection_subjects=selection_subjects
     )
 
 @app.route("/topics/<int:topic_id>", methods=["GET", "POST"])
