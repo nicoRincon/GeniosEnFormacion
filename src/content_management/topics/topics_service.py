@@ -5,7 +5,7 @@ from database.Materias.Tema import Tema
 from src.db_connection import db
 
 class TopicsService:
-    def get_topic_by_id(self, topic_id: int) -> Materia:
+    def get_topic_by_id(self, topic_id: int) -> Tema:
         topic_by_id = (
             Tema.query
             .with_entities(
