@@ -1,10 +1,15 @@
+import subprocess
 from src.content_management.activity_types.activity_types_service import ActivityTypesService
 from src.content_management.contents.contents_service import ContentsService
 from src.content_management.activities.activities_service import ActivitiesService
 from database.Materias.Actividad import Actividad
 from src.db_connection import app
 from flask import redirect, render_template, url_for, request, session
-from flask import jsonify
+from flask import jsonify, request
+import json
+from src.feed_artificial_intelligence.feed_ai_data_spanish import FeedAIDataSpanish
+import csv
+import os
 
 @app.route("/activities", methods=["POST"])
 def create_activities():
@@ -129,3 +134,44 @@ def delete_activity(activity_id: int):
         error = str(e.__str__())
 
     return redirect(url_for('activities', error=error, message=message))
+
+@app.route("/activities/auto_generate/<int:content_id>", methods=["GET"])
+def generate_activities(content_id):
+    ai = FeedAIDataSpanish()
+    activities = ai.generate_knn_based_questions(content_id)
+    if activities is None:
+        return jsonify({ "message": "No hay actividades base para este contenido." }), 404
+    return jsonify({"suggested_activity": activities}), 200
+
+@app.route("/activities/save_suggested", methods=["POST"])
+def save_suggested_activity():
+    if 'username' not in session:
+        return jsonify({"error": "No autenticado"}), 401
+
+    data = request.get_json()
+    content_id = data.get('content_id')
+    suggested_activity = data.get('suggested_activity')
+    original_suggested_activity = data.get('original_suggested_activity')
+
+    was_edited = json.dumps(suggested_activity, sort_keys=True) != json.dumps(original_suggested_activity, sort_keys=True)
+
+    if was_edited:
+        corrections_path = os.path.join('static', 'data_ai', 'processed', 'correcciones_ia.csv')
+        os.makedirs(os.path.dirname(corrections_path), exist_ok=True)
+        with open(corrections_path, 'a', newline='', encoding='utf-8') as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow([content_id, json.dumps(original_suggested_activity, ensure_ascii=False), json.dumps(suggested_activity, ensure_ascii=False)])
+            subprocess.run(
+            ["python", "-m", "ai_component.src.data_preprocessing", "corrections_ia"],
+            check=True
+        )
+
+    try:
+        ActivitiesService().create_activity(
+            content_id=content_id,
+            activity_type_id=None,
+            content=json.dumps(suggested_activity)
+        )
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 400

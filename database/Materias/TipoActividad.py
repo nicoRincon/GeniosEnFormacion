@@ -6,3 +6,5 @@ class TipoActividad(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     tipo_actividad = db.Column(db.String(50), nullable=False)
     peso = db.Column(db.Numeric)
+
+    actividades = db.relationship('Actividad', back_populates='tipo_actividad_relacionada')

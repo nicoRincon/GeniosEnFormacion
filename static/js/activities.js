@@ -87,6 +87,94 @@ window.onload = () => {
       });
     });
   }
+
+  let originalSuggestedActivity = null;
+
+  document.getElementById('auto-generate-activity-btn').addEventListener('click', function () {
+    let contents = document.getElementById('edit-content-id');
+    let options = {};
+    for (const element of contents.options) {
+      options[element.value] = element.text;
+    }
+    Swal.fire({
+      title: 'Generar Actividad Automáticamente',
+      text: 'Seleccione el contenido para el cual desea generar una actividad.',
+      input: 'select',
+      inputOptions: {
+        ...options
+      },
+      showCancelButton: true,
+      confirmButtonText: 'Generar',
+      cancelButtonText: 'Cancelar'
+    }).then((result) => {
+      if (result.isConfirmed && result.value) {
+        const contentId = result.value.trim();
+        if (contentId) {
+          $.ajax({
+            url: GENERATE_ACTIVITIES_URL.replace('0', contentId),
+            method: 'GET',
+            dataType: 'json',
+            success: function (data) {
+              if (data.suggested_activity) {
+                document.getElementById('suggested-content-id').value = contentId;
+                originalSuggestedActivity = data.suggested_activity;
+                loadQuestionsFromJson('auto-generated', data.suggested_activity);
+                const modal = new bootstrap.Modal(document.getElementById('suggestedActivityModal'));
+                modal.show();
+              } else {
+                Swal.fire({
+                  title: 'No se pudo generar',
+                  text: data.error || 'No hay actividades base.',
+                  icon: 'warning'
+                });
+              }
+            },
+            error: function (xhr, status, error) {
+              Swal.fire({
+                title: 'Error',
+                text: 'Ocurrió un error al generar la actividad.',
+                icon: 'error'
+              });
+            }
+          });
+        }
+      }
+    });
+  });
+
+  document.getElementById('suggested-activity-form').addEventListener('submit', function (e) {
+    e.preventDefault();
+    suggestedContentId = document.getElementById('suggested-content-id').value;
+    let editedJson;
+    try {
+      editedJson = JSON.parse(document.getElementById('suggested-activity-json').value);
+    } catch (err) {
+      console.error('Error parsing JSON:', err);
+      Swal.fire({ title: 'Error', text: 'El JSON no es válido.', icon: 'error' });
+      return;
+    }
+    $.ajax({
+      url: SAVE_SUGGESTED_ACTIVITY_URL,
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      data: JSON.stringify({
+        content_id: suggestedContentId,
+        suggested_activity: editedJson,
+        original_suggested_activity: originalSuggestedActivity
+      }),
+      success: (data) => {
+        if (data.success) {
+          Swal.fire({ title: 'Guardado', text: 'Actividad guardada correctamente.', icon: 'success' })
+            .then(() => window.location.reload());
+        } else {
+          Swal.fire({ title: 'Error', text: data.error || 'No se pudo guardar.', icon: 'error' });
+        }
+      },
+      error: () => {
+        Swal.fire({ title: 'Error', text: 'Ocurrió un error al guardar la actividad.', icon: 'error' });
+      }
+    });
+  });
 }
 
 function initQuestionsForm(formPrefix) {
@@ -413,18 +501,18 @@ function loadQuestionsFromJson(formPrefix, questionsJson) {
   });
 }
 
-function renderQuestionsView(questionsJson) {
+function renderQuestionsView(questionsJson, divContainerId = 'activity-questions-list') {
   let questions;
   try {
     questions = typeof questionsJson === 'string' ? JSON.parse(questionsJson) : questionsJson;
   } catch (e) {
     console.error('Error al interpretar las preguntas:', e);
-    document.getElementById('activity-questions-list').innerHTML = '<div class="text-danger">Error al interpretar las preguntas.</div>';
+    document.getElementById(divContainerId).innerHTML = '<div class="text-danger">Error al interpretar las preguntas.</div>';
     return;
   }
 
   if (!questions.length) {
-    document.getElementById('activity-questions-list').innerHTML = '<div class="text-muted">No hay preguntas.</div>';
+    document.getElementById(divContainerId).innerHTML = '<div class="text-muted">No hay preguntas.</div>';
     return;
   }
 
@@ -454,5 +542,5 @@ function renderQuestionsView(questionsJson) {
     html += `</div></div>`;
   });
 
-  document.getElementById('activity-questions-list').innerHTML = html;
+  document.getElementById(divContainerId).innerHTML = html;
 }

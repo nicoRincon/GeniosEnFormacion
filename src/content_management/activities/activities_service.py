@@ -1,3 +1,4 @@
+import subprocess
 from database.Materias.Recurso import Recurso
 from src.content_management.contents.contents_service import ContentsService
 from database.Materias.TipoActividad import TipoActividad
@@ -49,6 +50,11 @@ class ActivitiesService:
         new_activity.id_contenido = content_id
         new_activity.id_tipo_actividad = activity_type_id
         new_activity.contenido = content
+
+        subprocess.run(
+            ["python", "-m", "ai_component.src.data_preprocessing"],
+            check=True,
+        )
 
         db.session.add(new_activity)
         db.session.commit()
