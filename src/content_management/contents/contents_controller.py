@@ -35,23 +35,23 @@ def contents():
 
     message = request.args.get('message', None)
     error = request.args.get('error', None)
-    topics_to_show = []
+    contents_to_show = []
     try:
-        all_topics = ContentsService().get_all_contents()
-        for topic in all_topics:
-            topics_to_show.append({
-                'id': topic.id,
-                'title_name': topic.titulo,
-                'description': topic.contenido,
-                'grade_level': topic.nivel_grado,
-                'topic': topic.tema_nombre,
+        all_contents = ContentsService().get_all_contents()
+        for content in all_contents:
+            contents_to_show.append({
+                'id': content.id,
+                'title_name': content.titulo,
+                'description': content.contenido,
+                'grade_level': content.nivel_grado,
+                'topic': content.nombre_tema,
             })
     except ValueError as e:
         error = str(e.__str__())
 
     return render_template(
         'content_management/content.html',
-        subjects=topics_to_show,
+        contents=contents_to_show,
         error=error,
         message=message
     )

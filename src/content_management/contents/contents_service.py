@@ -27,7 +27,7 @@ class ContentsService:
             Contenido.query
             .with_entities(
                 Contenido.id,
-                Tema.nombre.label('tema_nombre'),
+                Tema.nombre.label('nombre_tema'),
                 Contenido.titulo,
                 Contenido.contenido,
                 Contenido.nivel_grado,

@@ -26,7 +26,7 @@ class TopicsService:
             Tema.query
             .with_entities(
                 Tema.id,
-                Materia.nombre,
+                Materia.nombre.label('nombre_materia'),
                 Tema.nombre,
                 Tema.descripcion,
             )

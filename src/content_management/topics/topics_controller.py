@@ -39,7 +39,8 @@ def topics():
         for topic in all_topics:
             topics_to_show.append({
                 'id': topic.id,
-                'subject_name': topic.nombre,
+                'subject_name': topic.nombre_materia,
+                'topic_name': topic.nombre,
                 'description': topic.descripcion
             })
     except ValueError as e:
@@ -47,7 +48,7 @@ def topics():
 
     return render_template(
         'content_management/topics.html',
-        subjects=topics_to_show,
+        topics=topics_to_show,
         error=error,
         message=message
     )
