@@ -10,6 +10,7 @@ import src.content_management.topics.topics_controller
 import src.content_management.contents.contents_controller
 import src.content_management.activities.activities_controller
 import src.content_management.activity_types.activity_types_controller
+from src.users.roles_service import RolesService
 
 
 @app.route("/dashboard", methods=["POST", "GET"])
@@ -54,8 +55,14 @@ def login():
             return redirect(url_for('dashboard'))
         except ValueError as e:
             error = str(e.__str__())
-
-    return render_template("login.html", error=error, tab=tab)
+    roles = RolesService().get_all_roles()
+    roles_selection = []
+    for role in roles:
+        roles_selection.append({
+            'id': role.id,
+            'rol_name': role.nombre_rol,
+        })
+    return render_template("login.html", error=error, tab=tab, roles=roles_selection)
 
 @app.route("/register", methods=["POST", "GET"])
 def register():
