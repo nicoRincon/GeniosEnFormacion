@@ -14,3 +14,4 @@ class Contenido(db.Model):
     fecha_actualizacion = db.Column(db.DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
 
     tema = db.relationship('Tema', back_populates='contenidos')
+    actividades = db.relationship('Actividad', back_populates='contenido_relacionado')
