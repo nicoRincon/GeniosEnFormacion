@@ -8,6 +8,8 @@ import src.content_management.subjects.subject_controller
 import src.content_management.subjects_per_user.subjects_per_users_controller
 import src.content_management.topics.topics_controller
 import src.content_management.contents.contents_controller
+import src.content_management.activities.activities_controller
+import src.content_management.activity_types.activity_types_controller
 
 
 @app.route("/dashboard", methods=["POST", "GET"])
@@ -96,7 +98,6 @@ def model_evaluation():
 @app.route('/model_deployment', methods=['GET'])
 def model_deployment():
     return render_template('project_explanation/model_deployment.html', username=session['username'])
-
 
 @app.context_processor
 def inject_pages_by_users():
