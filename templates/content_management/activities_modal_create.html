@@ -2,15 +2,15 @@
 
 <!-- Modal create -->
 {% block modal_data %}
-    id="activity-modal-create" aria-labelledby="activityModalCreateLabel"
+id="activity-modal-create" aria-labelledby="activityModalCreateLabel"
 {% endblock %}
 
 {% block modal_title %}
-    Crear Actividad
+Crear Actividad
 {% endblock %}
 
 {% block form_action %}
-    action="{{ url_for('create_activities') }}" method="post"
+action="{{ url_for('create_activities') }}" method="post"
 {% endblock %}
 
 {% block modal_body %}
@@ -19,8 +19,8 @@
         <label for="create-content-id">Contenido</label>
         <select name="content_id" id="create-content-id" class="form-select" required>
             <option value="" selected disabled>Seleccione un contenido</option>
-            {% for content in contents %}
-                <option value="{{ content.id }}">{{ content.title_name }}</option>
+            {% for content in selection_contents %}
+                <option value="{{ content.id }}">{{ content.name }}</option>
             {% endfor %}
         </select>
     </div>
@@ -28,13 +28,56 @@
         <label for="create-activity-type-id">Tipo de actividad</label>
         <select name="activity_type_id" id="create-activity-type-id" class="form-select" required>
             <option value="" selected disabled>Seleccione un tipo</option>
-            {% for type in activity_types %}
-                <option value="{{ type.id }}">{{ type.activity_type }}</option>
+            {% for type in selection_activity_types %}
+                <option value="{{ type.id }}">{{ type.name }}</option>
             {% endfor %}
         </select>
     </div>
-    <div class="form-group">
-        <label for="create-content">Contenido</label>
-        <textarea class="form-control" id="create-content" name="content" required></textarea>
+
+    <div class="container mt-4">
+        <input type="hidden" name="questions_json" id="questions-json-create">
+        <div id="questions-list-create"></div>
+        <button type="button" class="btn btn-primary" id="add-question-create">Agregar pregunta</button>
     </div>
+
+    <template id="question-template-create">
+        <div class="card mb-3 question-item">
+            <div class="card-body">
+                <button type="button" class="btn-close float-end remove-question" aria-label="Eliminar"></button>
+                <div class="mb-3">
+                    <label class="form-label" for="question_title">Pregunta</label>
+                    <input type="text" class="form-control question-title" name="question_title" required>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input type-question-radio" type="radio" name="type_question" value="open" checked>
+                    <label class="form-check-label">Es pregunta abierta</label>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input type-question-radio" type="radio" name="type_question" value="multiple">
+                    <label class="form-check-label">Es de selección múltiple</label>
+                </div>
+                <div class="form-check mb-2">
+                    <input class="form-check-input type-question-radio" type="radio" name="type_question" value="single">
+                    <label class="form-check-label">Es de selección única</label>
+                </div>
+
+                <div class="mb-3 options-container">
+                    <label class="form-label">Opciones</label>
+                    <div class="options-list"></div>
+                    <button type="button" class="btn btn-outline-primary btn-sm add-option">Agregar opción</button>
+                </div>
+                <div class="mb-3 correct-options-container">
+                    <label class="form-label">Opciones correctas</label>
+                    <div class="correct-options-list"></div>
+                </div>
+
+                <div class="mb-3 correct-text">
+                    <label class="form-label" for="open_ended_response">Texto esperado</label>
+                    <div class="open-ended-response">
+                        <input type="text" name="open_ended_response" class="form-control" placeholder="Texto esperado para la respuesta abierta">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </template>
 {% endblock %}

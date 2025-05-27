@@ -1,3 +1,5 @@
+from src.content_management.activity_types.activity_types_service import ActivityTypesService
+from src.content_management.contents.contents_service import ContentsService
 from src.content_management.activities.activities_service import ActivitiesService
 from database.Materias.Actividad import Actividad
 from src.db_connection import app
@@ -14,7 +16,7 @@ def create_activities():
     if request.method == 'POST':
         content_id = request.form['content_id']
         activity_type_id = request.form['activity_type_id']
-        content = request.form['content']
+        content = request.form['questions_json']
         try:
             message = ActivitiesService().create_activity(
                 content_id,
@@ -43,6 +45,22 @@ def activities():
                 'activity_type': activity.tipo_actividad,
                 'content': activity.contenido,
             })
+
+        activity_types = ActivityTypesService().get_all_activity_types()
+        contents = ContentsService().get_all_contents()
+
+        selection_activity_types = [
+            {
+                'id': activity_type.id,
+                'name': activity_type.tipo_actividad,
+            } for activity_type in activity_types
+        ]
+        selection_contents = [
+            {
+                'id': content.id,
+                'name': content.titulo,
+            } for content in contents
+        ]
     except ValueError as e:
         error = str(e.__str__())
 
@@ -50,7 +68,9 @@ def activities():
         'content_management/activities.html',
         activities=activities_to_show,
         error=error,
-        message=message
+        message=message,
+        selection_activity_types=selection_activity_types,
+        selection_contents=selection_contents
     )
 
 @app.route("/activities/<int:activity_id>", methods=["GET", "POST"])
@@ -85,7 +105,7 @@ def edit_activity(activity_id: int):
     try:
         activity_type_id = request.form['edit_activity_type_id']
         content_id = request.form['edit_content_id']
-        content = request.form['edit_content']
+        content = request.form['edit_questions_json']
         message = ActivitiesService().update_activity(
             activity_id, content_id, activity_type_id, content
         ).get('message', None)
