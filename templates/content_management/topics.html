@@ -36,17 +36,19 @@
                 <td>{{ topic.subject_name }}</td>
                 <td>{{ topic.topic_name }}</td>
                 <td>{{ topic.description }}</td>
-                <td class="d-flex justify-content-end">
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                        data-bs-target="#topic-modal-update" data-id="{{ topic.id }}">
-                        Editar
-                    </button>
-                    <form action="{{ url_for('topic_by_id', topic_id=topic.id) }}" method="post"
-                        class="py-0 my-0 mx-2"
-                    >
-                        <input type="hidden" name="_method" value="DELETE">
-                        <button type="submit" class="btn btn-danger">Eliminar</button>
-                    </form>
+                <td>
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#topic-modal-update" data-id="{{ topic.id }}">
+                            Editar
+                        </button>
+                        <form action="{{ url_for('topic_by_id', topic_id=topic.id) }}" method="post"
+                            class="py-0 my-0 mx-2"
+                        >
+                            <input type="hidden" name="_method" value="DELETE">
+                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                        </form>
+                    </div>
                 </td>
             </tr>
             {% endfor %}

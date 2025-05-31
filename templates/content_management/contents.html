@@ -38,17 +38,19 @@
                 <td>{{ content.description }}</td>
                 <td>{{ content.grade_level }}</td>
                 <td>{{ content.topic }}</td>
-                <td class="d-flex justify-content-end">
-                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                        data-bs-target="#content-modal-update" data-id="{{ content.id }}">
-                        Editar
-                    </button>
-                    <form action="{{ url_for('content_by_id', content_id=content.id) }}" method="post"
-                        class="py-0 my-0 mx-2"
-                    >
-                        <input type="hidden" name="_method" value="DELETE">
-                        <button type="submit" class="btn btn-danger">Eliminar</button>
-                    </form>
+                <td>
+                    <div class="d-flex justify-content-end">
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#content-modal-update" data-id="{{ content.id }}">
+                            Editar
+                        </button>
+                        <form action="{{ url_for('content_by_id', content_id=content.id) }}" method="post"
+                            class="py-0 my-0 mx-2"
+                        >
+                            <input type="hidden" name="_method" value="DELETE">
+                            <button type="submit" class="btn btn-danger">Eliminar</button>
+                        </form>
+                    </div>
                 </td>
             </tr>
             {% endfor %}
