@@ -4,7 +4,6 @@ from sklearn.model_selection import train_test_split
 from sklearn.neighbors import KNeighborsClassifier
 import joblib
 from src.db_connection import app
-from database.Materias.Actividad import Actividad
 from database.Materias.Contenido import Contenido
 from database.Materias.Materia import Materia
 from database.Materias.Tema import Tema
@@ -19,21 +18,16 @@ def extract_data():
         .join(UsuarioMateria.materias)
         .join(Materia.temas)
         .join(Tema.contenidos)
-        .join(Contenido.actividades)
         .with_entities(
-            Usuario.id.label('user_id'),
-            Usuario.nombre_usuario,
-            Materia.id.label('materia_id'),
             Materia.nombre.label('materia'),
-            Tema.id.label('tema_id'),
             Tema.nombre.label('tema'),
-            Contenido.id.label('contenido_id'),
             Contenido.titulo.label('contenido'),
-            Actividad.id.label('actividad_id'),
-            Actividad.contenido.label('actividad_contenido')
+            Contenido.nivel_grado,
         )
-        .all()
+        .order_by(Contenido.nivel_grado)
     )
+    print(data_to_learn.statement)
+    data_to_learn = data_to_learn.all()
     return pd.DataFrame(data_to_learn)
 
 def clean_data(data: pd.DataFrame) -> pd.DataFrame:
@@ -49,25 +43,27 @@ def normalize_text(text: str) -> str:
     return text
 
 def preprocess_data(df: pd.DataFrame) -> pd.DataFrame:
-    cleaned_data = clean_data(df)
-    cleaned_data['actividad_contenido'] = cleaned_data['actividad_contenido'].apply(normalize_text)
+    df = clean_data(df)
+    df['materia'] = df['materia'].apply(normalize_text)
+    df['tema'] = df['tema'].apply(normalize_text)
+    df['contenido'] = df['contenido'].apply(normalize_text)
 
     df['materia'] = df['materia'].astype('category').cat.codes
     df['tema'] = df['tema'].astype('category').cat.codes
     df['contenido'] = df['contenido'].astype('category').cat.codes
-    df['actividad_contenido'] = df['actividad_contenido'].astype('category').cat.codes
+    df['nivel_grado'] = df['nivel_grado'].astype(int)
     return df
 
 def train_and_save_model(df: pd.DataFrame, model_path: str):
     # Define X (features) and y (target)
-    X = df[['materia', 'tema', 'contenido', 'contenido_id']]
-    y = df['actividad_contenido']
+    X = df[['materia', 'tema', 'contenido']]
+    Y = df['nivel_grado']
 
-    # Divide en train/test
-    x_train, x_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    # Divide in train/test
+    x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
 
-    n_neighbors = len(x_train)
-    if n_neighbors < 1:
+    n_neighbors = min(5, len(x_train))
+    if n_neighbors < 5:
         raise ValueError("No hay suficientes datos para entrenar el modelo KNN.")
 
     # Train KNN model
