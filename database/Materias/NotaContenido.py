@@ -11,3 +11,6 @@ class NotaContenido(db.Model):
     nota_obtenida = db.Column(db.Numeric)
     fecha_creacion = db.Column(db.DateTime, default=datetime.now(timezone.utc))
     fecha_actualizacion = db.Column(db.DateTime, default=datetime.now(timezone.utc), onupdate=datetime.now(timezone.utc))
+
+    usuario = db.relationship('Usuario', back_populates='notas_contenido')
+    contenido = db.relationship('Contenido', back_populates='notas_contenido')

@@ -16,3 +16,4 @@ class Usuario(db.Model):
 
     rol = db.relationship('Rol', back_populates='usuarios')
     usuario_materia = db.relationship('UsuarioMateria', back_populates='usuarios')
+    notas_contenido = db.relationship('NotaContenido', back_populates='usuario')

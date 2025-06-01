@@ -15,3 +15,4 @@ class Contenido(db.Model):
 
     tema = db.relationship('Tema', back_populates='contenidos')
     actividades = db.relationship('Actividad', back_populates='contenido_relacionado')
+    notas_contenido = db.relationship('NotaContenido', back_populates='contenido')

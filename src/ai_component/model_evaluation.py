@@ -39,5 +39,5 @@ def evaluate_model(model: KNeighborsClassifier, x_test, y_test):
         "precision": precision,
         "recall": recall,
         "f1_score": f1,
-        "confusion_matrix": conf_matrix
+        "confusion_matrix": conf_matrix.tolist()
     }

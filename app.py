@@ -1,4 +1,5 @@
-from flask import redirect, render_template, url_for, request, session
+from flask import jsonify, redirect, render_template, url_for, request, session
+from src.ai_component.data_preprocessing import AiComponent
 from src.pages.pages_by_users_service import PagesByUsers
 from src.login.login import User
 from src.db_connection import app
@@ -107,6 +108,14 @@ def model_evaluation():
 @app.route('/model_deployment', methods=['GET'])
 def model_deployment():
     return render_template('project_explanation/model_deployment.html', username=session['username'])
+
+@app.route('/train_model_by_user')
+def train_model_by_user():
+    return jsonify(AiComponent().main())
+
+@app.route('/recommended_content_by_user')
+def recommended_content_by_user():
+    return jsonify(AiComponent().recommend_content())
 
 @app.context_processor
 def inject_pages_by_users():
