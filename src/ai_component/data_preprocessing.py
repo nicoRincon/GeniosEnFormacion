@@ -1,3 +1,4 @@
+import time
 import random
 import pandas as pd
 import os
@@ -16,10 +17,82 @@ from database.Usuarios.Usuario import Usuario
 
 
 class AiComponent:
-    mappings = {}
+    _user_models = {}  # {user_id: {'model': model, 'mappings': mappings, 'last_training': timestamp}}
 
     def __init__(self, filename: str = 'processed_data.csv'):
         self.filename = filename
+        self.mappings = {}
+
+    def get_user_id(self) -> int:
+        return session.get('user_id', 1)
+
+    def should_retrain(self, user_id: int) -> bool:
+        if user_id not in AiComponent._user_models:
+            print(f"Re-entrenando: Usuario {user_id} no tiene modelo")
+            return True
+
+        user_data = AiComponent._user_models[user_id]
+        if time.time() - user_data.get('last_training', 0) > 3600:  # 1 hora
+            print(f"Re-entrenando: Usuario {user_id} - modelo obsoleto")
+            return True
+
+        return False
+
+    def clear_user_model(self, user_id: int):
+        if user_id in AiComponent._user_models:
+            print(f"Limpiando modelo del usuario {user_id}")
+            del AiComponent._user_models[user_id]
+
+    def get_or_train_model(self, force_retrain: bool = False):
+        user_id = self.get_user_id()
+
+        if force_retrain or self.should_retrain(user_id):
+            self.clear_user_model(user_id)
+
+            print(f"Entrenando modelo para usuario {user_id}...")
+            with app.app_context():
+                df = self.extract_data()
+                df_processed = self.preprocess_data(df)
+
+                processed_path = os.path.join('static', 'data_ai', 'processed', f'user_{user_id}_{self.filename}')
+                os.makedirs(os.path.dirname(processed_path), exist_ok=True)
+                df_processed.to_csv(processed_path, index=False)
+
+                model_path = os.path.join('static', 'data_ai', 'models', f'user_{user_id}_knn_model.pkl')
+                os.makedirs(os.path.dirname(model_path), exist_ok=True)
+
+                model, _, _ = self.train_and_save_model(df_processed, model_path)
+
+                AiComponent._user_models[user_id] = {
+                    'model': model,
+                    'mappings': self.mappings.copy(),
+                    'last_training': time.time()
+                }
+
+                print(f"Modelo entrenado para usuario {user_id}")
+        else:
+            if user_id not in AiComponent._user_models:
+                print(f"Cargando modelo desde archivo para usuario {user_id}...")
+                try:
+                    model_path = os.path.join('static', 'data_ai', 'models', f'user_{user_id}_knn_model.pkl')
+                    model = joblib.load(model_path)
+                    mappings_path = os.path.join('static', 'data_ai', 'mappings', f'user_{user_id}_category_mappings.json')
+                    with open(mappings_path, 'r', encoding='utf-8') as f:
+                        mappings = json.load(f)
+                    AiComponent._user_models[user_id] = {
+                        'model': model,
+                        'mappings': mappings,
+                        'last_training': time.time()
+                    }
+                    print(f"Modelo cargado para usuario {user_id}")
+                except FileNotFoundError:
+                    print(f"No se encontró modelo para usuario {user_id}, entrenando nuevo...")
+                    return self.get_or_train_model(force_retrain=True)
+            else:
+                print(f"Usando modelo en memoria para usuario {user_id}")
+
+        user_data = AiComponent._user_models[user_id]
+        return user_data['model'], user_data['mappings']
 
     def extract_data(self):
         session['user_id'] = session.get('user_id', 1)
@@ -98,10 +171,30 @@ class AiComponent:
         df['contenido'] = contenido_cat.cat.codes
         df['nivel_grado'] = df['nivel_grado'].astype(int)
 
-        mappings_path = os.path.join('static', 'data_ai', 'mappings', 'category_mappings.json')
+        user_id = self.get_user_id()
+        mappings_path = os.path.join('static', 'data_ai', 'mappings', f'user_{user_id}_category_mappings.json')
         os.makedirs(os.path.dirname(mappings_path), exist_ok=True)
         with open(mappings_path, 'w', encoding='utf-8') as f:
             json.dump(self.mappings, f, ensure_ascii=False, indent=2)
+
+        return df
+
+    def preprocess_data_for_prediction(self, df: pd.DataFrame, existing_mappings: dict) -> pd.DataFrame:
+        df = self.clean_data(df)
+        df['materia'] = df['materia'].apply(self.normalize_text)
+        df['tema'] = df['tema'].apply(self.normalize_text)
+        df['contenido'] = df['contenido'].apply(self.normalize_text)
+
+        reverse_mappings = {
+            'materia': {v: k for k, v in existing_mappings['materia'].items()},
+            'tema': {v: k for k, v in existing_mappings['tema'].items()},
+            'contenido': {v: k for k, v in existing_mappings['contenido'].items()}
+        }
+
+        df['materia'] = df['materia'].map(reverse_mappings['materia']).fillna(-1).astype(int)
+        df['tema'] = df['tema'].map(reverse_mappings['tema']).fillna(-1).astype(int)
+        df['contenido'] = df['contenido'].map(reverse_mappings['contenido']).fillna(-1).astype(int)
+        df['nivel_grado'] = df['nivel_grado'].astype(int)
 
         return df
 
@@ -112,7 +205,6 @@ class AiComponent:
 
         if len(df_with_notes) < 5:
             print("Muy pocos datos para entrenar. Generando datos sintéticos...")
-            # Genera algunos datos sintéticos para poder entrenar
             for _, row in df_to_predict.iterrows():
                 synthetic_note = round(random.uniform(1.0, 5.0), 1)
                 synthetic_row = row.copy()
@@ -162,35 +254,59 @@ class AiComponent:
         return { "error": "No se pudo completar el proceso de IA." }
 
     def recommend_content(self):
-        # Carga el modelo entrenado
-        model_path = os.path.join('static', 'data_ai', 'models', 'knn_model.pkl')
-        model: KNeighborsClassifier = joblib.load(model_path)
+        """Recomienda contenido usando el modelo específico del usuario"""
+        try:
+            model, mappings = self.get_or_train_model()
+            user_id = self.get_user_id()
 
-        mappings_path = os.path.join('static', 'data_ai', 'mappings', 'category_mappings.json')
-        with open(mappings_path, 'r', encoding='utf-8') as f:
-            self.mappings = json.load(f)
+            with app.app_context():
+                df = self.extract_data()
 
-        with app.app_context():
-            df = self.extract_data()
-            df_processed = self.preprocess_data(df)
+                df_processed = self.preprocess_data_for_prediction(df, mappings)
 
-            # Filtra contenidos no vistos
-            df_not_seen = df_processed[df_processed['nota_obtenida'].isna()]
+                df_not_seen = df_processed[df_processed['nota_obtenida'].isna()]
 
-            if len(df_not_seen) == 0:
-                return {"message": "El usuario ha visto todos los contenidos"}
+                if len(df_not_seen) == 0:
+                    return {"message": f"El usuario {user_id} ha visto todos los contenidos"}
 
-            x_predict = df_not_seen[['materia', 'tema', 'contenido', 'nivel_grado']]
-            probabilities = model.predict_proba(x_predict)[:, 1]
+                # Filtra contenidos válidos
+                df_not_seen = df_not_seen[
+                    (df_not_seen['materia'] != -1) &
+                    (df_not_seen['tema'] != -1) &
+                    (df_not_seen['contenido'] != -1)
+                ]
 
-            df_not_seen = df_not_seen.copy()
-            df_not_seen['prob_aprobar'] = probabilities
+                if len(df_not_seen) == 0:
+                    return {"message": "No hay contenidos nuevos que el modelo pueda procesar"}
 
-            # Recomienda basándose en probabilidad y nivel de grado
-            # Prioriza contenidos de menor nivel con alta probabilidad
-            df_not_seen['score'] = df_not_seen['prob_aprobar'] - (df_not_seen['nivel_grado'] * 0.1)
+                x_predict = df_not_seen[['materia', 'tema', 'contenido', 'nivel_grado']]
+                probabilities = model.predict_proba(x_predict)[:, 1]
 
-            # Ordena por score descendente
-            recommended = df_not_seen.nlargest(3, 'score')[['contenido', 'nivel_grado', 'prob_aprobar']]
-            recommended['contenido'] = recommended['contenido'].map(self.mappings['contenido'])
-            return recommended.to_dict('records')
+                df_not_seen = df_not_seen.copy()
+                df_not_seen['prob_aprobar'] = probabilities
+
+                df_not_seen['score'] = df_not_seen['prob_aprobar'] - (df_not_seen['nivel_grado'] * 0.1)
+
+                recommended = df_not_seen.nlargest(3, 'score')[['contenido', 'nivel_grado', 'prob_aprobar', 'score']]
+
+                recommended['contenido'] = recommended['contenido'].map(mappings['contenido'])
+
+                result = recommended.to_dict('records')
+                print(f"Recomendaciones para usuario {user_id}: {len(result)} contenidos")
+                return result
+
+        except Exception as e:
+            user_id = self.get_user_id()
+            print(f"Error en recomendación para usuario {user_id}: {e}")
+            return {"error": f"Error al generar recomendaciones: {str(e)}"}
+
+    @classmethod
+    def clear_all_models(cls):
+        """Limpia todos los modelos en memoria (útil para mantenimiento)"""
+        cls._user_models.clear()
+        print("Todos los modelos en memoria han sido limpiados")
+
+    @classmethod
+    def get_active_users(cls):
+        """Obtiene lista de usuarios con modelos activos"""
+        return list(cls._user_models.keys())
