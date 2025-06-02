@@ -72,7 +72,9 @@ class AiComponent:
                 print(f"Modelo entrenado para usuario {user_id}")
 
                 try:
+                    print("Evaluando modelo...")
                     evaluate_model(model, x_test, y_test)
+                    print("Evaluación completada.")
                 except ImportError:
                     print("No se pudo importar evaluate_model para evaluación.")
 
@@ -146,13 +148,13 @@ class AiComponent:
 
     def clean_data(self, data: pd.DataFrame) -> pd.DataFrame:
         data = data.drop_duplicates()
-        # Fill NA/NaN values using the specified method.
+        # Cambia valores NA/NaN a un valor específico
         data = data.ffill()
         return data
 
     def normalize_text(self, text: str) -> str:
         text = text.lower()
-        # Remove punctuation and special characters
+        # Quitar la puntuación y caracteres especiales
         text = ''.join(char for char in text if char.isalnum() or char.isspace())
         return text
 
@@ -224,42 +226,16 @@ class AiComponent:
         X = df_with_notes[['materia', 'tema', 'contenido', 'nivel_grado']]
         Y = df_with_notes['aprobado'].astype(int)
 
-        # Train model
+        # Define el número de vecinos
         n_neighbors = min(3, len(X))
         model = KNeighborsClassifier(n_neighbors=n_neighbors)
         model.fit(X, Y)
 
-        # Save model
+        # Guarda el modelo entrenado
         joblib.dump(model, model_path)
         print(f"Modelo guardado en {model_path}")
 
         return model, X, Y
-
-    def main(self):
-        with app.app_context():
-            df = self.extract_data()
-            df_processed = self.preprocess_data(df)
-
-            # Save locally processed data
-            processed_path = os.path.join('static', 'data_ai', 'processed', self.filename)
-            os.makedirs(os.path.dirname(processed_path), exist_ok=True)
-            df_processed.to_csv(processed_path, index=False)
-            print("Datos procesados y guardados.")
-
-            # Train and save the KNN model
-            model_path = os.path.join('static', 'data_ai', 'models', 'knn_model.pkl')
-            os.makedirs(os.path.dirname(model_path), exist_ok=True)
-            model, x_test, y_test = self.train_and_save_model(df_processed, model_path)
-
-            # Evaluate the model
-            try:
-                metrics = evaluate_model(model, x_test, y_test)
-                print("Métricas de evaluación:", metrics)
-                return metrics
-            except ImportError:
-                print("No se pudo importar evaluate_model para evaluación.")
-
-        return { "error": "No se pudo completar el proceso de IA." }
 
     def recommend_content(self):
         """Recomienda contenido usando el modelo específico del usuario"""
