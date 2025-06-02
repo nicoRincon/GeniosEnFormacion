@@ -117,6 +117,11 @@ def train_model_by_user():
 def recommended_content_by_user():
     return jsonify(AiComponent().recommend_content())
 
+@app.route('/clear_recommended_content_by_user')
+def clear_recommended_content_by_user():
+    AiComponent.clear_all_models()
+    return jsonify({"message": "User models cleared successfully."})
+
 @app.context_processor
 def inject_pages_by_users():
     return {

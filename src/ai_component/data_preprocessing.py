@@ -116,6 +116,7 @@ class AiComponent:
                 Materia.nombre.label('materia'),
                 Tema.nombre.label('tema'),
                 Contenido.titulo.label('contenido'),
+                Contenido.id.label('id_contenido'),
                 NotaContenido.id_usuario,
                 Contenido.nivel_grado,
                 NotaContenido.nota_obtenida
@@ -128,7 +129,7 @@ class AiComponent:
         for row in data_to_learn:
             row_dict = row._asdict()
             if row_dict['nota_obtenida'] is None:
-                # Esto será lo que queremos predecir
+                # Lo que se desea predecir
                 row_dict['nota_obtenida'] = None
                 row_dict['aprobado'] = None
             else:
@@ -163,13 +164,15 @@ class AiComponent:
         self.mappings = {
             'materia': dict(enumerate(materia_cat.cat.categories)),
             'tema': dict(enumerate(tema_cat.cat.categories)),
-            'contenido': dict(enumerate(contenido_cat.cat.categories))
+            'contenido': dict(enumerate(contenido_cat.cat.categories)),
+            'id_contenido': dict(enumerate(df['id_contenido']))
         }
 
         df['materia'] = materia_cat.cat.codes
         df['tema'] = tema_cat.cat.codes
         df['contenido'] = contenido_cat.cat.codes
         df['nivel_grado'] = df['nivel_grado'].astype(int)
+        df.drop('id_contenido', axis=1, inplace=True)
 
         user_id = self.get_user_id()
         mappings_path = os.path.join('static', 'data_ai', 'mappings', f'user_{user_id}_category_mappings.json')
@@ -289,9 +292,21 @@ class AiComponent:
 
                 recommended = df_not_seen.nlargest(3, 'score')[['contenido', 'nivel_grado', 'prob_aprobar', 'score']]
 
-                recommended['contenido'] = recommended['contenido'].map(mappings['contenido'])
+                result = []
+                for index, row in recommended.iterrows():
+                    contenido_code = int(row['contenido'])
+                    index_mapping = list(mappings['contenido'].keys()).index(int(row['contenido']))
+                    contenido_nombre = mappings['contenido'].get(contenido_code, f"Contenido {contenido_code}")
+                    contenido_id = list(mappings['id_contenido'])[index_mapping]
 
-                result = recommended.to_dict('records')
+                    result.append({
+                        'contenido': contenido_nombre,
+                        'id_contenido': contenido_id,
+                        'nivel_grado': int(row['nivel_grado']),
+                        'prob_aprobar': float(row['prob_aprobar']),
+                        'score': float(row['score'])
+                    })
+
                 print(f"Recomendaciones para usuario {user_id}: {len(result)} contenidos")
                 return result
 
@@ -303,6 +318,15 @@ class AiComponent:
     @classmethod
     def clear_all_models(cls):
         """Limpia todos los modelos en memoria (útil para mantenimiento)"""
+        for user_id in cls._user_models:
+            mappings_path = os.path.join('static', 'data_ai', 'mappings', f'user_{user_id}_category_mappings.json')
+            if os.path.isfile(mappings_path):
+                os.remove(mappings_path)
+
+            memory_path = os.path.join('static', 'data_ai', 'models', f'user_{user_id}_knn_model.pkl')
+            if os.path.isfile(memory_path):
+                os.remove(memory_path)
+
         cls._user_models.clear()
         print("Todos los modelos en memoria han sido limpiados")
 
