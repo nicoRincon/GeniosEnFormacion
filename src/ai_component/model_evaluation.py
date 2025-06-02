@@ -31,8 +31,7 @@ def evaluate_model(model: KNeighborsClassifier, x_test, y_test):
     print(f"Precision: {precision:.4f}")
     print(f"Recall: {recall:.4f}")
     print(f"F1 Score: {f1:.4f}")
-    print("Confusion Matrix:")
-    print(conf_matrix)
+    print(f"Confusion Matrix: {conf_matrix.tolist()}")
 
     return {
         "accuracy": accuracy,

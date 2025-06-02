@@ -61,7 +61,7 @@ class AiComponent:
                 model_path = os.path.join('static', 'data_ai', 'models', f'user_{user_id}_knn_model.pkl')
                 os.makedirs(os.path.dirname(model_path), exist_ok=True)
 
-                model, _, _ = self.train_and_save_model(df_processed, model_path)
+                model, x_test, y_test = self.train_and_save_model(df_processed, model_path)
 
                 AiComponent._user_models[user_id] = {
                     'model': model,
@@ -70,6 +70,12 @@ class AiComponent:
                 }
 
                 print(f"Modelo entrenado para usuario {user_id}")
+
+                try:
+                    evaluate_model(model, x_test, y_test)
+                except ImportError:
+                    print("No se pudo importar evaluate_model para evaluación.")
+
         else:
             if user_id not in AiComponent._user_models:
                 print(f"Cargando modelo desde archivo para usuario {user_id}...")
@@ -123,7 +129,6 @@ class AiComponent:
             )
             .order_by(Contenido.nivel_grado)
         )
-        print(data_to_learn.statement)
         data_to_learn = data_to_learn.all()
         data_list = []
         for row in data_to_learn:
