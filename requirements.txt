@@ -12,3 +12,4 @@ openpyxl
 setuptools
 flask_seeder
 seaborn
+openai

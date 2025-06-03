@@ -1,0 +1,58 @@
+{% extends "templates/base.html" %}
+
+{% block title %}Actividades Inteligentes - Genios en Formación{% endblock %}
+
+{% block add_head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/ai_activities.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- AI Header -->
+    <div class="ai-header">
+        <div class="container">
+            <div class="text-center">
+                <div class="ai-badge">
+                    <i class="fas fa-robot me-2"></i>
+                    Generado por Inteligencia Artificial
+                </div>
+                <h1 class="display-4 fw-bold mb-3">🎯 Actividades Personalizadas</h1>
+                <p class="lead">Actividades diseñadas especialmente para ti basadas en tu progreso de aprendizaje</p>
+                <button id="generate-activities-btn" class="btn btn-light btn-lg mt-3">
+                    <i class="fas fa-magic me-2"></i>
+                    Generar Nuevas Actividades
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Loading Spinner -->
+        <div id="loading-spinner" class="loading-spinner">
+            <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+                <span class="visually-hidden">Generando actividades...</span>
+            </div>
+            <h4 class="mt-3">🤖 La IA está creando actividades para ti...</h4>
+            <p class="text-muted">Esto puede tomar unos segundos</p>
+        </div>
+
+        <!-- Activities Container -->
+        <div id="activities-container">
+            <!-- Las actividades se cargarán aquí dinámicamente -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="empty-state" style="display: none;">
+            <i class="fas fa-robot"></i>
+            <h3>No hay actividades generadas</h3>
+            <p>Haz clic en "Generar Nuevas Actividades" para que la IA cree contenido personalizado para ti.</p>
+            <button class="btn btn-ai-primary" onclick="generateActivities()">
+                <i class="fas fa-magic me-2"></i>
+                Generar Actividades
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/ai_activities.js') }}"></script>
+{% endblock %}

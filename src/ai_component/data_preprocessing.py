@@ -275,14 +275,13 @@ class AiComponent:
 
                 result = []
                 for index, row in recommended.iterrows():
-                    contenido_code = int(row['contenido'])
-                    index_mapping = list(mappings['contenido'].keys()).index(int(row['contenido']))
-                    contenido_nombre = mappings['contenido'].get(contenido_code, f"Contenido {contenido_code}")
-                    contenido_id = list(mappings['id_contenido'])[index_mapping]
+                    content_code = int(row['contenido'])
+                    content_name = mappings['contenido'].get(content_code, "")
+                    content_id = mappings['id_contenido'].get(content_code, "")
 
                     result.append({
-                        'contenido': contenido_nombre,
-                        'id_contenido': contenido_id,
+                        'contenido': content_name,
+                        'id_contenido': content_id,
                         'nivel_grado': int(row['nivel_grado']),
                         'prob_aprobar': float(row['prob_aprobar']),
                         'score': float(row['score'])

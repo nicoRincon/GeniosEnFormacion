@@ -144,7 +144,7 @@ window.onload = () => {
 
   document.getElementById('suggested-activity-form').addEventListener('submit', function (e) {
     e.preventDefault();
-    suggestedContentId = document.getElementById('suggested-content-id').value;
+    let suggestedContentId = document.getElementById('suggested-content-id').value;
     let editedJson;
     try {
       editedJson = JSON.parse(document.getElementById('suggested-activity-json').value);
